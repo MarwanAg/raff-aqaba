@@ -1,0 +1,1178 @@
+<title>رف العقبة</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  colors: { bg:'var(--bg)', surface:'var(--surface)', ink:'var(--ink)', muted:'var(--muted)', line:'var(--line)', sea:'var(--sea)', deep:'var(--deep)', coral:'var(--coral)', soft:'var(--soft)', ok:'var(--ok)', warn:'var(--warn)' },
+  fontFamily: { display:['Alexandria','"IBM Plex Sans Arabic"','Tahoma','sans-serif'], body:['"IBM Plex Sans Arabic"','"Segoe UI"','Tahoma','sans-serif'] }
+} } };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.3.4/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7.26.4/babel.min.js"></script>
+<style>
+/* Layout: a mall of separate showrooms. Deep-sea hero with an interactive dot field, a velocity marquee of shop names,
+   a showroom directory; each showroom is themed in its own shop color with a sticky name switcher to move between shops. */
+:root{
+  --bg:#EDF1F0; --surface:#FFFFFF; --ink:#0C1A1E; --muted:#56666B; --line:#D3DBD9;
+  --sea:#0B5A64; --deep:#06262C; --coral:#EE5A45; --soft:#E2EAE9; --ok:#1E7A4F; --warn:#A8640A;
+  --f-display:Alexandria,"IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+  --nav-h:64px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#061215; --surface:#0D1D21; --ink:#E6EEED; --muted:#8FA2A5; --line:#1C3338;
+  --sea:#43B4BF; --deep:#041a1e; --coral:#FF6E5A; --soft:#11272B; --ok:#4CC38A; --warn:#E7A23B; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#061215; --surface:#0D1D21; --ink:#E6EEED; --muted:#8FA2A5; --line:#1C3338;
+  --sea:#43B4BF; --deep:#041a1e; --coral:#FF6E5A; --soft:#11272B; --ok:#4CC38A; --warn:#E7A23B; color-scheme:dark }
+
+/* lenis */
+html.lenis,html.lenis body{height:auto}.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}.lenis.lenis-smooth iframe{pointer-events:none}
+
+body{ background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:15px; line-height:1.65; -webkit-font-smoothing:antialiased }
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:70; background:var(--surface) }
+.wrap{ max-width:1240px; margin-inline:auto; padding-left:max(16px,env(safe-area-inset-left,0px)); padding-right:max(16px,env(safe-area-inset-right,0px)) }
+h1,h2,h3,.disp{ font-family:var(--f-display); text-wrap:balance; line-height:1.15; letter-spacing:-.01em }
+.num{ font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate; display:inline-block }
+.eyebrow{ font-size:12px; letter-spacing:.08em; font-weight:600; text-transform:uppercase; color:var(--muted) }
+
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:.55rem; border-radius:999px; padding:.75rem 1.3rem; font-weight:600; white-space:nowrap; cursor:pointer; transition:background .2s, color .2s, border-color .2s, box-shadow .2s }
+.btn-ink{ background:var(--ink); color:var(--bg) }
+.btn-coral{ background:var(--coral); color:#fff; box-shadow:0 10px 30px -10px color-mix(in srgb,var(--coral) 70%,transparent) }
+.btn-line{ border:1px solid var(--line); background:var(--surface); color:var(--ink) }
+.btn-line:hover{ border-color:var(--ink) }
+.btn-glass{ border:1px solid rgba(255,255,255,.28); color:#fff; background:rgba(255,255,255,.06); backdrop-filter:blur(6px) }
+.btn-glass:hover{ background:rgba(255,255,255,.14) }
+.chip{ border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:999px; padding:.4rem .95rem; font-size:13.5px; font-weight:500; white-space:nowrap; cursor:pointer; transition:all .2s }
+.chip:hover{ border-color:var(--ink) }
+.chip[aria-pressed="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink) }
+.field{ width:100%; border:1px solid var(--line); background:var(--surface); color:var(--ink); border-radius:12px; padding:.65rem .85rem }
+.lbl{ display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:.35rem }
+:focus-visible{ outline:2px solid var(--coral); outline-offset:3px }
+
+.size{ min-width:2.7rem; text-align:center; border:1px solid var(--line); border-radius:10px; padding:.3rem .55rem; font-size:13px; font-variant-numeric:tabular-nums; background:var(--surface); color:var(--ink) }
+.size.out{ color:var(--muted); text-decoration:line-through; opacity:.55 }
+.size.sel{ background:var(--ink); color:var(--bg); border-color:var(--ink) }
+
+/* nav */
+.nav{ position:sticky; top:env(safe-area-inset-top,0px); z-index:60; background:color-mix(in srgb,var(--surface) 82%,transparent); backdrop-filter:saturate(1.4) blur(14px); border-bottom:1px solid var(--line) }
+.navlink{ padding:.45rem .85rem; border-radius:999px; font-size:14px; font-weight:600; color:var(--muted); white-space:nowrap }
+.navlink:hover{ color:var(--ink) }
+.navlink[aria-current="page"]{ color:var(--ink); background:var(--soft) }
+
+/* hero */
+.hero{ position:relative; background:var(--deep); color:#F2F7F6; overflow:hidden; isolation:isolate }
+.dotfield{ position:absolute; inset:0; overflow:hidden; z-index:-1; pointer-events:none; contain:strict }
+.dotfield canvas{ position:absolute; top:0; left:0; display:block }
+.hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(70% 60% at 85% 10%, rgba(238,90,69,.22), transparent 60%), radial-gradient(60% 70% at 10% 100%, rgba(67,180,191,.25), transparent 60%); pointer-events:none }
+.deck{ position:relative; height:360px }
+.deck-card{ position:absolute; width:62%; max-width:300px; aspect-ratio:3/4; border-radius:22px; overflow:hidden; box-shadow:0 30px 60px -20px rgba(0,0,0,.55); display:flex; flex-direction:column; cursor:pointer; left:50%; top:50% }
+
+/* marquee */
+.marquee{ overflow:hidden; border-block:1px solid var(--line); background:var(--surface); direction:ltr }
+.marquee-track{ display:flex; width:max-content; will-change:transform }
+.marquee-item{ font-family:var(--f-display); font-weight:800; font-size:clamp(28px,5vw,56px); padding-inline:1.6rem; white-space:nowrap; display:flex; align-items:center; gap:1.6rem; cursor:pointer; line-height:1.6 }
+.marquee-item .o{ color:transparent; -webkit-text-stroke:1.2px var(--ink) }
+.marquee-item:hover .o{ color:var(--ink) }
+.marquee-dot{ width:.32em; height:.32em; border-radius:50%; display:inline-block }
+
+/* spotlight card (React Bits pattern) */
+.spot{ position:relative; overflow:hidden; border-radius:22px; border:1px solid var(--line); background:var(--surface); transition:border-color .3s, transform .4s cubic-bezier(.2,.8,.2,1) }
+.spot::before{ content:""; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .35s; background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb,var(--brand,var(--sea)) 22%,transparent), transparent 60%); z-index:2 }
+.spot:hover::before{ opacity:1 }
+.spot:hover{ border-color:color-mix(in srgb,var(--brand,var(--sea)) 55%,var(--line)); transform:translateY(-4px) }
+
+/* product card */
+.pc{ display:flex; flex-direction:column; gap:.7rem; cursor:pointer; text-align:start; animation:rise .7s cubic-bezier(.2,.8,.2,1) both }
+.pc-img{ position:relative; aspect-ratio:4/5; max-width:100%; border-radius:18px; overflow:hidden; background:var(--soft) }
+.pc-img > *{ transition:transform .7s cubic-bezier(.2,.8,.2,1) }
+.pc:hover .pc-img > .art, .pc:hover .pc-img > img{ transform:scale(1.05) }
+.pc-img img{ width:100%; height:100%; object-fit:cover }
+.pc-quick{ position:absolute; inset-inline:12px; bottom:12px; padding:.6rem; border-radius:12px; text-align:center; font-weight:600; font-size:13.5px; background:color-mix(in srgb,var(--surface) 88%,transparent); backdrop-filter:blur(8px); color:var(--ink); opacity:0; transform:translateY(8px); transition:all .35s }
+.pc:hover .pc-quick, .pc:focus-visible .pc-quick{ opacity:1; transform:none }
+@keyframes rise{ from{ opacity:0; transform:translateY(18px) } to{ opacity:1; transform:none } }
+.art{ width:100%; height:100%; display:grid; place-items:center }
+.art svg{ width:64%; height:64%; overflow:visible }
+.tag{ font-size:11.5px; font-weight:700; border-radius:999px; padding:.2rem .6rem }
+
+/* showroom */
+.switcher{ position:sticky; top:calc(env(safe-area-inset-top,0px) + var(--nav-h)); z-index:50; background:color-mix(in srgb,var(--bg) 88%,transparent); backdrop-filter:blur(12px); border-bottom:1px solid var(--line) }
+.sw-list{ display:flex; gap:.4rem; overflow-x:auto; scrollbar-width:none; padding-block:.6rem }
+.sw-list::-webkit-scrollbar{ display:none }
+.sw{ display:flex; align-items:center; gap:.5rem; padding:.45rem .95rem; border-radius:999px; font-weight:600; font-size:14px; white-space:nowrap; border:1px solid transparent; color:var(--muted) }
+.sw:hover{ color:var(--ink); border-color:var(--line) }
+.sw[aria-current="true"]{ background:var(--surface); color:var(--ink); border-color:var(--line); box-shadow:0 4px 14px -8px rgba(0,0,0,.35) }
+.cover{ position:relative; overflow:hidden; background:var(--brand); color:var(--on-brand) }
+.cover::before{ content:""; position:absolute; inset:0; background:radial-gradient(90% 120% at 100% 0%, rgba(255,255,255,.18), transparent 55%), radial-gradient(60% 80% at 0% 100%, rgba(0,0,0,.22), transparent 60%); pointer-events:none }
+.cover-name{ font-size:clamp(44px,9vw,120px); font-weight:800; line-height:1.05 }
+.next{ display:block; position:relative; overflow:hidden; border-radius:28px; background:var(--brand); color:var(--on-brand) }
+.next-name{ font-size:clamp(36px,7vw,92px); font-weight:800; line-height:1.05; transition:transform .6s cubic-bezier(.2,.8,.2,1) }
+.next:hover .next-name{ transform:translateX(calc(var(--dir,1) * -14px)) }
+
+/* sheet */
+.scrim{ position:fixed; inset:0; z-index:80; background:rgba(3,14,17,.55); backdrop-filter:blur(3px) }
+.sheet{ position:fixed; z-index:81; background:var(--surface); color:var(--ink); overflow:auto; overscroll-behavior:contain; inset-block:0; inset-inline-end:0; width:min(560px,100%); padding-bottom:env(safe-area-inset-bottom,0px) }
+@media (max-width:767px){ .sheet{ inset:auto 0 0 0; width:100%; max-height:92%; border-radius:24px 24px 0 0 } }
+.toast{ position:fixed; inset-inline:0; bottom:calc(22px + env(safe-area-inset-bottom,0px)); z-index:90; display:flex; justify-content:center; padding-inline:16px; pointer-events:none }
+.toast div{ background:var(--ink); color:var(--bg); padding:.75rem 1.2rem; border-radius:14px; font-weight:500; box-shadow:0 16px 40px -12px rgba(0,0,0,.45); max-width:540px; animation:rise .35s both }
+
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:20px }
+.tbl-wrap{ overflow-x:auto }
+.tbl{ width:100%; border-collapse:collapse; font-size:14px }
+.tbl th{ text-align:start; font-size:12px; color:var(--muted); font-weight:600; padding:.7rem; border-bottom:1px solid var(--line); white-space:nowrap }
+.tbl td{ padding:.7rem; border-bottom:1px solid var(--line); vertical-align:middle }
+.min0{ min-width:0 }
+.clamp1{ display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden }
+.sw-word{ display:inline-block }
+@media (prefers-reduced-motion: reduce){ *{ animation:none!important; transition:none!important } }
+</style>
+
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+/* ==========================================================================
+   رف العقبة — نسخة تجريبية (MVP)
+   React + Tailwind + GSAP (SplitText, ScrollTrigger) + Lenis
+   مكوّنات الحركة مبنية على أنماط React Bits: SplitText, BlurText, Magnet,
+   SpotlightCard, DotGrid, ScrollVelocity, CountUp.
+   البيانات وهمية وتُحفظ في متصفح الزائر فقط (localStorage).
+   ضع رابط Google Form هنا:
+   ========================================================================== */
+const SURVEY_URL = '';
+
+const { useState, useEffect, useLayoutEffect, useRef, useMemo, createContext, useContext } = React;
+gsap.registerPlugin(ScrollTrigger, SplitText);
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE = matchMedia('(pointer: fine)').matches;
+const DB_KEY = 'raff_v2', LANG_KEY = 'raff_lang';
+const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } };
+const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } };
+
+/* ---------------------------- النصوص ---------------------------- */
+const T = {
+ar:{
+  brand:'رف', city:'العقبة', demo:'نسخة تجريبية',
+  nav_home:'المعارض', nav_dash:'لأصحاب المحلات', nav_pricing:'الاشتراك', lang:'English',
+  hero_eyebrow:'العقبة · نسخة تجريبية',
+  hero_title:'كل محل في العقبة، بمعرضه الخاص',
+  hero_sub:'تنقّل بين معارض محلات الألبسة باسم كل محل، وشاهد البضاعة والأسعار والمقاسات المتوفرة قبل أن تخرج من البيت.',
+  hero_cta:'تصفّح المعارض', hero_owner:'أنا صاحب محل',
+  st_stores:'معرض', st_items:'قطعة', st_areas:'مناطق',
+  dir_eyebrow:'دليل المحلات', dir_title:'اختر المحل وادخل معرضه',
+  dir_search:'ابحث عن محل بالاسم أو المنطقة', dir_none:'ما في محل بهذا الاسم.',
+  enter:'ادخل المعرض', items:'قطعة',
+  own_eyebrow:'لصاحب المحل', own_title:'معرض جاهز لمحلك، بدون موقع إلكتروني',
+  own_sub:'بدل ما تدفع على تصميم موقع واستضافة وصيانة، محلك بياخد معرض خاص باسمه وألوانه، وأنت بتديره من هاتفك.',
+  steps:[['سجّل محلك','الاسم، المنطقة، رقم واتساب، ولون معرضك.'],['ارفع بضاعتك','صورة، سعر، والمقاسات المتوفرة. التعديل بثواني.'],['استقبل الزبائن','استفسارات واتساب وحجوزات تستلمها في المحل.']],
+  own_cta:'جرّب لوحة المحل', own_price:'50 د.أ شهرياً',
+  survey_title:'شفت الفكرة؟ رأيك بيحدد شكلها النهائي', survey_sub:'استبيان قصير لأصحاب المحلات، 7 دقائق.', survey_btn:'عبّي الاستبيان', survey_missing:'رابط الاستبيان لم يُضف للنسخة التجريبية بعد',
+  sw_label:'المعارض',
+  all:'الكل', size:'المقاس', sort:'الترتيب', search_store:'ابحث داخل هذا المعرض',
+  s_new:'الأحدث', s_low:'السعر: الأقل أولاً', s_high:'السعر: الأعلى أولاً',
+  results:'قطعة', no_items:'ما في قطع بهذه المواصفات في هذا المعرض.',
+  cat_men:'رجالي', cat_women:'نسائي', cat_kids:'أطفال', cat_sport:'رياضي', cat_abaya:'عبايات', cat_shoes:'أحذية', cat_bags:'حقائب',
+  jd:'د.أ', sale:'خصم', sold_out:'نفدت', view:'عرض القطعة',
+  area:'المنطقة', hours:'الدوام', whatsapp:'واتساب المحل', copy:'نسخ الرقم', copied:'تم نسخ الرقم',
+  next_label:'المعرض التالي', back_dir:'كل المعارض',
+  m_sizes:'المقاسات المتوفرة', m_desc:'عن القطعة', m_ask:'اسأل المحل على واتساب', m_reserve:'احجز القطعة واستلمها من المحل',
+  m_name:'اسمك', m_phone:'رقم هاتفك', m_send:'أرسل الحجز', m_need_size:'اختر المقاس أولاً', m_need_info:'اكتب اسمك ورقم هاتفك',
+  m_done:'وصل الحجز للمحل. افتح لوحة المحل لتشاهده.', m_views:'مشاهدة', close:'إغلاق',
+  wa_msg:'مرحبا، شفت "{p}" في معرضكم على منصة رف بسعر {price} د.أ. هل المقاس {s} متوفر؟',
+  d_title:'لوحة المحل', d_sub:'هيك بتدير معرضك. كل التعديلات محفوظة على هذا الجهاز فقط.', d_manage:'المحل', d_new:'سجّل محل جديد', d_open:'افتح المعرض',
+  k_items:'القطع المعروضة', k_views:'مشاهدات', k_res:'حجوزات جديدة', k_out:'مقاسات نفدت',
+  t_items:'القطع', t_res:'الحجوزات', t_add:'إضافة قطعة', t_edit:'تعديل القطعة', t_profile:'بيانات المعرض',
+  c_item:'القطعة', c_price:'السعر', c_sizes:'المقاسات (اضغط لتبديل التوفر)', c_views:'مشاهدات',
+  edit:'تعديل', del:'حذف', del_ok:'تأكيد الحذف', deleted:'حُذفت القطعة', no_dash_items:'المعرض فاضي. أضف أول قطعة من «إضافة قطعة».',
+  r_item:'القطعة', r_size:'المقاس', r_cust:'الزبون', r_when:'الوقت', r_status:'الحالة',
+  st_new:'جديد', st_confirmed:'مؤكد', st_collected:'تم الاستلام', st_cancelled:'ملغي', no_res:'لا توجد حجوزات بعد. افتح أي قطعة في المعرض واحجزها، ثم ارجع هنا.',
+  a_name_ar:'اسم القطعة (عربي)', a_name_en:'اسم القطعة (English)', a_desc:'وصف قصير', a_cat:'القسم', a_price:'السعر (د.أ)', a_old:'السعر قبل الخصم (اختياري)', a_sizes:'المقاسات المتوفرة', a_color:'لون القطعة', a_img:'صورة القطعة (اختياري)', a_img_hint:'من الهاتف أو الكمبيوتر. بدون صورة نعرض رسمة للقطعة.', a_rm_img:'إزالة الصورة',
+  a_save:'احفظ القطعة', a_update:'احفظ التعديلات', cancel:'إلغاء', a_saved:'انحفظت القطعة وصارت ظاهرة في معرضك', a_err:'اكتب اسم القطعة وسعرها واختر مقاساً واحداً على الأقل',
+  p_name_ar:'اسم المحل (عربي)', p_name_en:'اسم المحل (English)', p_tag_ar:'وصف المعرض (عربي)', p_tag_en:'وصف المعرض (English)', p_area_ar:'المنطقة (عربي)', p_area_en:'المنطقة (English)', p_phone:'رقم واتساب', p_hours:'ساعات الدوام', p_color:'لون المعرض', p_save:'احفظ بيانات المعرض', p_saved:'انحفظت بيانات المعرض',
+  new_store:'محل جديد', new_ok:'انضاف محلك. عبّي بياناته واختر لون معرضه.',
+  storage_full:'مساحة التخزين في المتصفح امتلأت. جرّب صورة أصغر.',
+  reset:'إرجاع البيانات التجريبية', reset_ok:'اضغط مرة ثانية للتأكيد', reset_done:'رجعت البيانات التجريبية',
+  pr_eyebrow:'الاشتراك', pr_title:'اشتراك واحد بدل موقع إلكتروني كامل', pr_sub:'موقع خاص لمحل ألبسة يكلّف تصميماً واستضافة وصيانة ومتابعة. هنا معرضك جاهز، والزبائن يتنقّلون بين محلات العقبة من مكان واحد.',
+  pr_plan:'اشتراك المحل', pr_month:'شهرياً', pr_note:'سعر مقترح للمرحلة الأولى، ونسأل أصحاب المحلات عن رأيهم فيه.',
+  pr_f:['معرض خاص باسم محلك ولونه','عدد غير محدود من القطع والصور','تعديل الأسعار والمقاسات من الهاتف','زر واتساب على كل قطعة','استقبال حجوزات القطع','إحصائيات المشاهدات والحجوزات','ظهور في دليل محلات العقبة'],
+  pr_vs:'مقارنة سريعة', pr_own:'موقع خاص للمحل', pr_raff:'معرض على رف',
+  pr_rows:[['تكلفة البداية','تصميم وبرمجة','لا يوجد'],['الاستضافة والصيانة','عليك','علينا'],['جلب الزبائن','إعلانات ممولة','زوار دليل المحلات'],['وقت الإطلاق','أسابيع','نفس اليوم']],
+  footer:'نسخة تجريبية لعرض الفكرة على محلات العقبة. المحلات والقطع والأرقام أمثلة وهمية.'
+},
+en:{
+  brand:'Raff', city:'Aqaba', demo:'Demo',
+  nav_home:'Showrooms', nav_dash:'For shop owners', nav_pricing:'Subscription', lang:'العربية',
+  hero_eyebrow:'Aqaba · Demo',
+  hero_title:'Every Aqaba shop, in its own showroom',
+  hero_sub:'Move between clothing shops by name and see their items, prices and available sizes before you leave home.',
+  hero_cta:'Browse showrooms', hero_owner:'I own a shop',
+  st_stores:'showrooms', st_items:'items', st_areas:'areas',
+  dir_eyebrow:'Shop directory', dir_title:'Pick a shop and step into its showroom',
+  dir_search:'Search shops by name or area', dir_none:'No shop matches that name.',
+  enter:'Enter showroom', items:'items',
+  own_eyebrow:'For shop owners', own_title:'A ready showroom for your shop, no website needed',
+  own_sub:'Instead of paying for a website, hosting and upkeep, your shop gets its own showroom in its name and colors, managed from your phone.',
+  steps:[['Register your shop','Name, area, WhatsApp number and your showroom color.'],['Upload your stock','Photo, price and available sizes. Edits take seconds.'],['Receive customers','WhatsApp questions and reservations collected in store.']],
+  own_cta:'Try the shop dashboard', own_price:'50 JD / month',
+  survey_title:'Seen the idea? Your opinion shapes the final version', survey_sub:'A short survey for shop owners, 7 minutes.', survey_btn:'Fill in the survey', survey_missing:'The survey link hasn\'t been added to this demo yet',
+  sw_label:'Showrooms',
+  all:'All', size:'Size', sort:'Sort', search_store:'Search this showroom',
+  s_new:'Newest', s_low:'Price: low to high', s_high:'Price: high to low',
+  results:'items', no_items:'No items match in this showroom.',
+  cat_men:'Men', cat_women:'Women', cat_kids:'Kids', cat_sport:'Sport', cat_abaya:'Abayas', cat_shoes:'Shoes', cat_bags:'Bags',
+  jd:'JD', sale:'Sale', sold_out:'Sold out', view:'View item',
+  area:'Area', hours:'Hours', whatsapp:'Shop WhatsApp', copy:'Copy number', copied:'Number copied',
+  next_label:'Next showroom', back_dir:'All showrooms',
+  m_sizes:'Available sizes', m_desc:'About this item', m_ask:'Ask the shop on WhatsApp', m_reserve:'Reserve and pick up in store',
+  m_name:'Your name', m_phone:'Your phone', m_send:'Send reservation', m_need_size:'Pick a size first', m_need_info:'Enter your name and phone',
+  m_done:'Reservation sent. Open the shop dashboard to see it.', m_views:'views', close:'Close',
+  wa_msg:'Hi, I saw "{p}" in your showroom on Raff for {price} JD. Is size {s} available?',
+  d_title:'Shop dashboard', d_sub:'This is how you run your showroom. All changes are saved on this device only.', d_manage:'Shop', d_new:'Register a new shop', d_open:'Open showroom',
+  k_items:'Listed items', k_views:'Views', k_res:'New reservations', k_out:'Sold-out sizes',
+  t_items:'Items', t_res:'Reservations', t_add:'Add item', t_edit:'Edit item', t_profile:'Showroom details',
+  c_item:'Item', c_price:'Price', c_sizes:'Sizes (tap to toggle availability)', c_views:'Views',
+  edit:'Edit', del:'Delete', del_ok:'Confirm delete', deleted:'Item deleted', no_dash_items:'Your showroom is empty. Add your first item from "Add item".',
+  r_item:'Item', r_size:'Size', r_cust:'Customer', r_when:'When', r_status:'Status',
+  st_new:'New', st_confirmed:'Confirmed', st_collected:'Collected', st_cancelled:'Cancelled', no_res:'No reservations yet. Open any item in the showroom, reserve it, then come back.',
+  a_name_ar:'Item name (Arabic)', a_name_en:'Item name (English)', a_desc:'Short description', a_cat:'Category', a_price:'Price (JD)', a_old:'Price before discount (optional)', a_sizes:'Available sizes', a_color:'Item color', a_img:'Item photo (optional)', a_img_hint:'From your phone or computer. Without a photo we show an illustration.', a_rm_img:'Remove photo',
+  a_save:'Save item', a_update:'Save changes', cancel:'Cancel', a_saved:'Item saved and now visible in your showroom', a_err:'Enter a name and price, and pick at least one size',
+  p_name_ar:'Shop name (Arabic)', p_name_en:'Shop name (English)', p_tag_ar:'Showroom line (Arabic)', p_tag_en:'Showroom line (English)', p_area_ar:'Area (Arabic)', p_area_en:'Area (English)', p_phone:'WhatsApp number', p_hours:'Opening hours', p_color:'Showroom color', p_save:'Save showroom details', p_saved:'Showroom details saved',
+  new_store:'New shop', new_ok:'Your shop was added. Fill in its details and pick a showroom color.',
+  storage_full:'Browser storage is full. Try a smaller photo.',
+  reset:'Restore demo data', reset_ok:'Tap again to confirm', reset_done:'Demo data restored',
+  pr_eyebrow:'Subscription', pr_title:'One subscription instead of a full website', pr_sub:'A dedicated website for a clothing shop costs design, hosting, maintenance and upkeep. Here your showroom is ready, and customers move between Aqaba shops from one place.',
+  pr_plan:'Shop subscription', pr_month:'per month', pr_note:'Proposed launch price. We are asking shop owners what they think of it.',
+  pr_f:['Your own showroom in your name and color','Unlimited items and photos','Update prices and sizes from your phone','WhatsApp button on every item','Item reservations','Views and reservation stats','Listing in the Aqaba shop directory'],
+  pr_vs:'Quick comparison', pr_own:'Own shop website', pr_raff:'Showroom on Raff',
+  pr_rows:[['Setup cost','Design and development','None'],['Hosting and upkeep','Yours','Ours'],['Bringing customers','Paid ads','Directory visitors'],['Time to launch','Weeks','Same day']],
+  footer:'A demo to present the idea to Aqaba shops. Shops, items and numbers are fictional examples.'
+}};
+
+const CATS = ['men','women','kids','sport','abaya','shoes','bags'];
+const SIZESETS = { men:['S','M','L','XL','XXL'], women:['XS','S','M','L','XL'], sport:['S','M','L','XL','XXL'], kids:['2Y','4Y','6Y','8Y','10Y'], abaya:['52','54','56','58','60'], shoes:['38','39','40','41','42','43','44'], bags:['One size'] };
+const DEFAULT_SHAPE = { men:'shirt', women:'dress', kids:'tee', sport:'hoodie', abaya:'abaya', shoes:'shoe', bags:'bag' };
+
+/* ---------------------------- بيانات تجريبية ---------------------------- */
+function seed(){
+  const now = Date.now(), d = n => now - n*86400000;
+  const sz = (cat, q) => SIZESETS[cat].map((s,i) => ({ s, q: q[i] ?? 0 }));
+  const P = (id, store, cat, shape, ar, en, price, old, color, q, days, dar, den, views) =>
+    ({ id, store, cat, shape, name:{ar,en}, price, old, color, sizes:sz(cat,q), t:d(days), desc:{ar:dar,en:den}, views });
+  return {
+    v:2, session:{ store:'s1' },
+    stores:[
+      { id:'s1', color:'#1F3A5F', name:{ar:'بيت الأناقة',en:'Elegance House'}, tag:{ar:'كلاسيك رجالي ونسائي للمناسبات والدوام',en:'Classic menswear and womenswear for work and occasions'}, area:{ar:'وسط البلد',en:'Downtown'}, hours:{ar:'10 ص – 11 م',en:'10am – 11pm'}, phone:'0790000101' },
+      { id:'s2', color:'#0E7C86', name:{ar:'موج سبورت',en:'Mawj Sport'}, tag:{ar:'ملابس وأحذية رياضية للبحر والجيم',en:'Sportswear and shoes for the sea and the gym'}, area:{ar:'السوق التجاري',en:'Commercial Market'}, hours:{ar:'11 ص – 12 ل',en:'11am – 12am'}, phone:'0790000102' },
+      { id:'s3', color:'#5B3A55', name:{ar:'دار العباية',en:'Abaya House'}, tag:{ar:'عبايات كريب وكتان وتطريز يدوي',en:'Crepe, linen and hand-embroidered abayas'}, area:{ar:'شارع النهضة',en:'An-Nahda St.'}, hours:{ar:'10 ص – 10 م',en:'10am – 10pm'}, phone:'0790000103' },
+      { id:'s4', color:'#A9442A', name:{ar:'خطوة',en:'Khatwa'}, tag:{ar:'أحذية جلد وسنيكرز وصنادل صيفية',en:'Leather shoes, sneakers and summer sandals'}, area:{ar:'وسط البلد',en:'Downtown'}, hours:{ar:'10 ص – 11 م',en:'10am – 11pm'}, phone:'0790000104' },
+      { id:'s5', color:'#E0A526', name:{ar:'براعم',en:'Baraem'}, tag:{ar:'ملابس أطفال من عمر سنتين لعشر سنوات',en:'Kidswear from age two to ten'}, area:{ar:'الحمامات التونسية',en:'Tunisian Baths'}, hours:{ar:'4 م – 11 م',en:'4pm – 11pm'}, phone:'0790000105' },
+      { id:'s6', color:'#2F6B4F', name:{ar:'أوتلت المرسى',en:'Marsa Outlet'}, tag:{ar:'كاجوال يومي بأسعار مخفضة طول السنة',en:'Everyday casualwear, discounted all year'}, area:{ar:'السوق التجاري',en:'Commercial Market'}, hours:{ar:'10 ص – 12 ل',en:'10am – 12am'}, phone:'0790000106' }
+    ],
+    products:[
+      P('p1','s1','men','shirt','قميص أكسفورد أزرق فاتح','Light blue Oxford shirt',18,null,'#A8C4E2',[1,3,2,2,0],2,'قطن أكسفورد بقصة مستقيمة، يناسب الدوام.','Straight-cut cotton Oxford, made for the office.',34),
+      P('p2','s1','men','blazer','بليزر كحلي','Navy blazer',65,null,'#22304D',[0,2,2,1,1],6,'صوف خفيف، زرين، بطانة كاملة.','Light wool, two buttons, fully lined.',51),
+      P('p3','s1','women','dress','فستان سهرة زيتي','Olive evening dress',48,null,'#56633F',[1,1,2,0,0],3,'قماش ساتان بطول ميدي.','Midi-length satin.',46),
+      P('p4','s1','men','pants','بنطلون قماش بيج','Beige chino trousers',24,null,'#CDB894',[2,3,3,1,0],9,'قطن مرن بقصة سليم.','Stretch cotton, slim cut.',22),
+      P('p5','s1','bags','bag','حقيبة يد جلد','Leather handbag',32,null,'#7A4A2E',[3],11,'جلد طبيعي بجيب داخلي.','Genuine leather with an inner pocket.',27),
+      P('p6','s2','sport','hoodie','هودي رياضي رمادي','Grey sport hoodie',22,null,'#5B6C79',[2,3,3,2,1],4,'قطن ثقيل مع كابتشو وجيب أمامي.','Heavy cotton with hood and front pocket.',29),
+      P('p7','s2','sport','shorts','شورت جري','Running shorts',12,null,'#1D2A33',[1,2,3,1,0],2,'قماش سريع النشفان، مناسب للبحر.','Quick-dry fabric, beach-ready.',18),
+      P('p8','s2','shoes','shoe','حذاء جري خفيف','Lightweight running shoes',45,null,'#E4572E',[0,1,2,3,2,1,0],7,'نعل مرن ووزن 240 غرام.','Flexible sole, 240 g.',58),
+      P('p9','s2','sport','tee','تيشيرت دراي فت','Dri-fit tee',11,15,'#1FA3A3',[3,4,2,0,1],1,'يسحب العرق، مثالي لصيف العقبة.','Wicks sweat, made for Aqaba summers.',40),
+      P('p10','s2','sport','pants','بنطلون تدريب أسود','Black training pants',17,null,'#2A2D31',[1,2,0,2,1],5,'خصر مطاط وجيوب بسحاب.','Elastic waist, zip pockets.',21),
+      P('p11','s3','abaya','abaya','عباية كريب سوداء','Black crepe abaya',35,null,'#1E1E24',[2,3,2,1,0],3,'كريب ياباني لا يتجعد.','Wrinkle-free Japanese crepe.',62),
+      P('p12','s3','abaya','abaya','عباية مطرزة كحلي','Embroidered navy abaya',55,null,'#2E3354',[0,1,2,1,1],8,'تطريز يدوي على الأكمام.','Hand embroidery on the sleeves.',37),
+      P('p13','s3','abaya','abaya','عباية كتان بيج','Beige linen abaya',42,null,'#D8C7AE',[1,2,2,0,0],2,'كتان خفيف للصيف.','Light summer linen.',30),
+      P('p14','s3','abaya','abaya','عباية رمادية بأكمام واسعة','Grey wide-sleeve abaya',38,46,'#8B8B92',[0,2,1,1,0],12,'قصة واسعة مع حزام.','Relaxed cut with a belt.',25),
+      P('p15','s4','shoes','shoe','لوفر جلد بني','Brown leather loafers',30,null,'#6B4226',[0,0,1,2,2,1,1],6,'جلد طبيعي ونعل مطاط.','Genuine leather, rubber sole.',19),
+      P('p16','s4','shoes','shoe','سنيكرز أبيض','White sneakers',36,null,'#F1F1EC',[1,2,2,2,1,0,0],1,'جلد صناعي سهل التنظيف.','Easy-clean faux leather.',48),
+      P('p17','s4','shoes','shoe','صندل صيفي','Summer sandals',19,24,'#C99A62',[2,2,1,0,1,1,0],4,'قاعدة طبية مريحة.','Cushioned footbed.',26),
+      P('p18','s4','shoes','boot','بوت شتوي','Winter boots',49,null,'#3B2A20',[0,1,1,1,2,1,0],15,'جلد مع بطانة دافئة.','Leather with a warm lining.',14),
+      P('p19','s5','kids','tee','طقم تيشيرت وشورت','Tee and shorts set',9,null,'#F0B53F',[2,3,1,0,1],2,'قطن 100% للأطفال.','100% cotton for kids.',24),
+      P('p20','s5','kids','dress','فستان بنات نعناعي','Girls mint dress',15,null,'#8FCBB9',[1,2,2,1,0],5,'قطن ناعم مع أكمام قصيرة.','Soft cotton, short sleeves.',20),
+      P('p21','s5','kids','hoodie','جاكيت أولاد','Boys zip jacket',21,null,'#3C6E9E',[0,2,2,1,1],10,'سحاب كامل وبطانة خفيفة.','Full zip, light lining.',16),
+      P('p22','s5','kids','tee','بيجامة قطن','Cotton pajamas',11,14,'#F4A6B8',[2,2,2,1,0],3,'قطعتين، قطن ناعم.','Two pieces, soft cotton.',12),
+      P('p23','s6','men','pants','جينز سليم','Slim jeans',16,24,'#31507F',[0,1,2,0,1],2,'دنيم مرن بقصة سليم.','Stretch denim, slim cut.',52),
+      P('p24','s6','men','shirt','قميص كتان بيج','Beige linen shirt',12,18,'#CBB79A',[1,2,2,1,0],4,'كتان خفيف بأكمام طويلة.','Light linen, long sleeves.',39),
+      P('p25','s6','men','tee','تيشيرت أبيض أساسي','Basic white tee',4.5,7,'#F4F4F2',[0,2,3,1,0],1,'قطن عادي للاستخدام اليومي.','Everyday plain cotton.',63),
+      P('p26','s6','women','dress','فستان كاجوال أزرق','Blue casual dress',14,22,'#7FA7C9',[1,1,2,1,0],7,'قماش فيسكوز خفيف.','Light viscose.',33)
+    ],
+    orders:[
+      { id:'o1', store:'s1', product:'p2', size:'M', name:'أحمد', phone:'0791111111', status:'new', t:now-3600e3*3 },
+      { id:'o2', store:'s1', product:'p3', size:'S', name:'سارة', phone:'0782222222', status:'confirmed', t:now-86400e3 }
+    ]
+  };
+}
+function loadDb(){ const d = lsGet(DB_KEY); return d && d.v === 2 ? d : seed(); }
+
+/* ---------------------------- أدوات ---------------------------- */
+const money = n => Number(n).toFixed(3);
+const uid = p => p + Math.random().toString(36).slice(2,8);
+function onBrand(hex){ const h = hex.replace('#',''); const [r,g,b] = [0,2,4].map(i => parseInt(h.substr(i,2),16)/255); const L = .2126*r + .7152*g + .0722*b; return L > .58 ? '#14110C' : '#FFFFFF'; }
+function hexRgb(hex){ const h = hex.replace('#',''); return [0,2,4].map(i => parseInt(h.substr(i,2),16)); }
+const Ctx = createContext(null);
+const useApp = () => useContext(Ctx);
+function parseHash(){ const h = decodeURIComponent((location.hash || '').slice(1)); if(h.startsWith('store-')) return { name:'store', id:h.slice(6) }; if(['dashboard','pricing'].includes(h)) return { name:h }; return { name:'home' }; }
+const go = h => { location.hash = h; };
+function scrollToTop(){ if(window.__lenis) window.__lenis.scrollTo(0, { immediate:true }); else window.scrollTo(0,0); }
+function scrollToEl(sel){ const el = document.querySelector(sel); if(!el) return; if(window.__lenis) window.__lenis.scrollTo(el, { offset:-80, duration:1.2 }); else el.scrollIntoView({ behavior:'smooth' }); }
+
+/* ---------------------------- رسومات القطع ---------------------------- */
+const SHAPES = {
+  tee:'M30 22 L42 15 Q50 23 58 15 L70 22 L86 37 L75 47 L70 42 L70 86 L30 86 L30 42 L25 47 L14 37 Z',
+  shirt:'M30 21 L42 14 L50 24 L58 14 L70 21 L86 40 L76 47 L70 41 L70 87 L30 87 L30 41 L24 47 L14 40 Z',
+  hoodie:'M30 26 L40 18 Q50 6 60 18 L70 26 L86 42 L76 51 L70 46 L70 86 L30 86 L30 46 L24 51 L14 42 Z',
+  blazer:'M30 19 L42 13 L50 42 L58 13 L70 19 L84 40 L78 88 L22 88 L16 40 Z',
+  dress:'M41 12 L59 12 L61 30 Q57 37 60 42 L81 88 L19 88 L40 42 Q43 37 39 30 Z',
+  abaya:'M38 10 Q50 17 62 10 L80 30 L86 91 L14 91 L20 30 Z',
+  pants:'M30 12 L70 12 L74 88 L56 88 L50 40 L44 88 L26 88 Z',
+  shorts:'M27 30 L73 30 L77 68 L54 70 L50 50 L46 70 L23 68 Z',
+  shoe:'M10 64 L11 46 Q20 40 31 43 L46 52 Q62 59 81 61 Q91 63 91 71 L91 75 L10 75 Z',
+  boot:'M28 16 L52 16 L54 56 Q70 60 84 66 Q91 70 89 78 L26 78 Z',
+  bag:'M20 40 L80 40 L84 87 L16 87 Z'
+};
+const DETAIL = {
+  shirt:'M42 14 L50 24 L58 14 M50 24 L50 87',
+  blazer:'M42 13 L46 46 M58 13 L54 46 M50 50 L50 52 M50 60 L50 62',
+  hoodie:'M40 18 Q50 32 60 18 M47 30 L47 44 M53 30 L53 44 M38 66 L62 66',
+  abaya:'M50 14 L50 91',
+  shoe:'M10 75 L91 75 M30 46 L36 52 M36 44 L42 50',
+  boot:'M26 78 L89 78 M30 24 L52 24',
+  pants:'M50 12 L50 20',
+  tee:'M42 15 Q50 23 58 15'
+};
+function Art({ p, brand }){
+  const shape = p.shape || DEFAULT_SHAPE[p.cat] || 'tee';
+  const c = p.color || '#888', b = brand || '#0B5A64';
+  const bg = `radial-gradient(120% 90% at 50% 30%, color-mix(in srgb, ${b} 10%, var(--surface)) 0%, color-mix(in srgb, ${b} 22%, var(--soft)) 100%)`;
+  return (
+    <div className="art" style={{ background:bg }}>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <ellipse cx="50" cy="95" rx="30" ry="3.5" fill="rgba(0,0,0,.14)" />
+        {shape === 'bag' && <path d="M36 40 Q36 18 50 18 Q64 18 64 40" stroke={c} strokeWidth="4" fill="none" />}
+        <path d={SHAPES[shape]} fill={c} stroke="rgba(0,0,0,.18)" strokeWidth=".8" strokeLinejoin="round" />
+        <path d={SHAPES[shape]} fill="url(#sheen)" opacity=".55" />
+        {DETAIL[shape] && <path d={DETAIL[shape]} stroke="rgba(0,0,0,.22)" strokeWidth="1" fill="none" strokeLinecap="round" />}
+        <defs><linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".35" /><stop offset=".5" stopColor="#fff" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".18" /></linearGradient></defs>
+      </svg>
+    </div>
+  );
+}
+function ProductVisual({ p, brand }){ return p.img ? <img src={p.img} alt="" /> : <Art p={p} brand={brand} />; }
+
+/* ============ مكوّنات الحركة (أنماط React Bits) ============ */
+
+/* SplitText — يقسم العربي لكلمات (حتى ما تنقطع الحروف) والإنجليزي لحروف */
+function SplitHeading({ text, as:Tag = 'h1', className, style, delay = 0, stagger }){
+  const ref = useRef(null); const { lang } = useApp();
+  useLayoutEffect(() => {
+    if(REDUCED || !ref.current) return;
+    const type = lang === 'ar' ? 'words' : 'chars';
+    const st = new SplitText(ref.current, { type: type === 'chars' ? 'words,chars' : 'words', wordsClass:'sw-word' });
+    const targets = type === 'chars' ? st.chars : st.words;
+    const tw = gsap.fromTo(targets, { opacity:0, y:36, filter:'blur(10px)' }, { opacity:1, y:0, filter:'blur(0px)', duration:.9, ease:'power3.out', stagger: stagger ?? (type === 'chars' ? .025 : .07), delay });
+    return () => { tw.kill(); st.revert(); };
+  }, [text, lang]);
+  return <Tag ref={ref} key={text} className={className} style={style}>{text}</Tag>;
+}
+
+/* BlurText */
+function BlurText({ text, className, delay = .35 }){
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    if(REDUCED || !ref.current) return;
+    const st = new SplitText(ref.current, { type:'words', wordsClass:'sw-word' });
+    const tw = gsap.fromTo(st.words, { opacity:0, filter:'blur(8px)' }, { opacity:1, filter:'blur(0px)', duration:.7, stagger:.025, delay, ease:'power2.out' });
+    return () => { tw.kill(); st.revert(); };
+  }, [text]);
+  return <p ref={ref} key={text} className={className}>{text}</p>;
+}
+
+/* Magnet */
+function Magnet({ children, strength = .28 }){
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current; if(!el || !FINE || REDUCED) return;
+    const xTo = gsap.quickTo(el, 'x', { duration:.5, ease:'power3' }), yTo = gsap.quickTo(el, 'y', { duration:.5, ease:'power3' });
+    const move = e => { const r = el.getBoundingClientRect(); xTo((e.clientX - (r.left + r.width/2)) * strength); yTo((e.clientY - (r.top + r.height/2)) * strength); };
+    const leave = () => { xTo(0); yTo(0); };
+    el.addEventListener('pointermove', move); el.addEventListener('pointerleave', leave);
+    return () => { el.removeEventListener('pointermove', move); el.removeEventListener('pointerleave', leave); };
+  }, []);
+  return <span ref={ref} style={{ display:'inline-block' }}>{children}</span>;
+}
+
+/* SpotlightCard */
+function SpotlightCard({ children, className = '', brand, style, ...rest }){
+  const move = e => { const r = e.currentTarget.getBoundingClientRect(); e.currentTarget.style.setProperty('--mx', (e.clientX - r.left) + 'px'); e.currentTarget.style.setProperty('--my', (e.clientY - r.top) + 'px'); };
+  return <div className={'spot ' + className} style={{ '--brand':brand, ...style }} onPointerMove={move} {...rest}>{children}</div>;
+}
+
+/* DotGrid — شبكة نقاط تتفاعل مع المؤشر */
+function DotGrid({ gap = 26, size = 2.2, radius = 150 }){
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current, ctx = cv.getContext('2d');
+    let w, h, dots = [], dpr = Math.min(2, devicePixelRatio || 1), mx = -999, my = -999, raf, visible = true;
+    const base = [180, 215, 214], hot = hexRgb('#EE5A45');
+    const box = cv.parentElement;
+    const build = () => { w = box.clientWidth; h = box.clientHeight; if(!w || !h) return; cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); dots = [];
+      for(let y = gap/2; y < h; y += gap) for(let x = gap/2; x < w; x += gap) dots.push({ x, y, ox:0, oy:0 }); };
+    const draw = () => {
+      ctx.clearRect(0,0,w,h);
+      for(const d of dots){
+        const dx = d.x - mx, dy = d.y - my, dist = Math.hypot(dx, dy), t = Math.max(0, 1 - dist/radius);
+        const tx = dist ? dx/dist * t * 14 : 0, ty = dist ? dy/dist * t * 14 : 0;
+        d.ox += (tx - d.ox) * .12; d.oy += (ty - d.oy) * .12;
+        const c = base.map((v,i) => Math.round(v + (hot[i]-v) * t));
+        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${.18 + t*.75})`;
+        ctx.beginPath(); ctx.arc(d.x + d.ox, d.y + d.oy, size * (1 + t*.9), 0, 6.283); ctx.fill();
+      }
+      if(!REDUCED && visible) raf = requestAnimationFrame(draw);
+    };
+    build(); draw();
+    let lastW = w, lastH = h;
+    let rf;
+    const ro = new ResizeObserver(() => { cancelAnimationFrame(rf); rf = requestAnimationFrame(() => { if(box.clientWidth === lastW && box.clientHeight === lastH) return; lastW = box.clientWidth; lastH = box.clientHeight; build(); if(REDUCED) draw(); }); });
+    ro.observe(box);
+    const host = box.parentElement;
+    const pm = e => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; };
+    const pl = () => { mx = -999; my = -999; };
+    host.addEventListener('pointermove', pm); host.addEventListener('pointerleave', pl);
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if(visible && !REDUCED){ cancelAnimationFrame(raf); raf = requestAnimationFrame(draw); } }); io.observe(cv);
+    return () => { cancelAnimationFrame(raf); cancelAnimationFrame(rf); ro.disconnect(); io.disconnect(); host.removeEventListener('pointermove', pm); host.removeEventListener('pointerleave', pl); };
+  }, []);
+  return <div className="dotfield" aria-hidden="true"><canvas ref={ref} /></div>;
+}
+
+/* ScrollVelocity — شريط أسماء المحلات يتسارع مع سرعة التمرير */
+function VelocityMarquee({ stores }){
+  const { L } = useApp(); const track = useRef(null);
+  useEffect(() => {
+    const el = track.current; if(!el || REDUCED) return;
+    let x = 0, dir = -1, half = el.scrollWidth / 2;
+    const ro = new ResizeObserver(() => { half = el.scrollWidth / 2; }); ro.observe(el);
+    const tick = (time, dt) => {
+      const v = window.__lenis ? window.__lenis.velocity : 0;
+      if(v > .5) dir = -1; else if(v < -.5) dir = 1;
+      x += dir * (0.045 + Math.min(Math.abs(v), 60) * 0.012) * dt;
+      x = gsap.utils.wrap(-half, 0, x);
+      el.style.transform = `translate3d(${x}px,0,0)`;
+    };
+    gsap.ticker.add(tick);
+    return () => { gsap.ticker.remove(tick); ro.disconnect(); };
+  }, [stores.length]);
+  const row = stores.map((s, i) => (
+    <a key={s.id + '-' + i} href={'#store-' + s.id} className="marquee-item">
+      <span className={i % 2 ? 'o' : ''}>{L(s.name)}</span>
+      <span className="marquee-dot" style={{ background:s.color }} />
+    </a>
+  ));
+  return <div className="marquee" aria-label="shops"><div ref={track} className="marquee-track">{row}{row}</div></div>;
+}
+
+/* CountUp */
+function CountUp({ to }){
+  const ref = useRef(null);
+  useEffect(() => {
+    if(REDUCED || !ref.current) return;
+    const o = { v:0 }; const tw = gsap.to(o, { v:to, duration:1.3, ease:'power2.out', onUpdate:() => { if(ref.current) ref.current.textContent = Math.round(o.v); } });
+    return () => tw.kill();
+  }, [to]);
+  return <span ref={ref} className="num">{to}</span>;
+}
+
+/* إظهار الأقسام عند التمرير */
+function useReveal(dep){
+  useLayoutEffect(() => {
+    if(REDUCED) return;
+    const els = gsap.utils.toArray('.rv'); if(!els.length) return;
+    const vh = innerHeight;
+    const below = els.filter(e => e.getBoundingClientRect().top > vh * .92);
+    gsap.set(below, { opacity:0, y:40 });
+    const trig = ScrollTrigger.batch(below, { start:'top 90%', once:true, onEnter: b => gsap.to(b, { opacity:1, y:0, duration:.9, stagger:.08, ease:'power3.out' }) });
+    const sec = setTimeout(() => ScrollTrigger.refresh(), 300);
+    return () => { clearTimeout(sec); trig.forEach(t => t.kill()); gsap.set(below, { clearProps:'opacity,transform' }); };
+  }, [dep]);
+}
+
+/* ============================== الواجهة ============================== */
+function Nav({ route }){
+  const { t, lang, setLang } = useApp();
+  const hdr = useRef(null);
+  useEffect(() => {
+    const el = hdr.current; if(!el) return;
+    let last = 0, f;
+    const ro = new ResizeObserver(() => { cancelAnimationFrame(f); f = requestAnimationFrame(() => {
+      const h = el.offsetHeight; if(h !== last){ last = h; document.documentElement.style.setProperty('--nav-h', h + 'px'); } }); });
+    ro.observe(el); return () => { cancelAnimationFrame(f); ro.disconnect(); };
+  }, []);
+  const cur = n => route.name === n || (n === 'home' && route.name === 'store') ? 'page' : undefined;
+  return (
+    <header className="nav" ref={hdr}>
+      <div className="wrap flex items-center gap-3 flex-wrap" style={{ minHeight:64 }}>
+        <a href="#" className="flex items-center gap-2.5 me-auto">
+          <span className="grid place-items-center w-9 h-9 rounded-xl bg-ink text-bg disp font-extrabold text-lg">{lang === 'ar' ? 'ر' : 'R'}</span>
+          <span className="disp font-extrabold text-xl">{t('brand')} <span className="text-coral">{t('city')}</span></span>
+        </a>
+        <nav className="flex gap-1 overflow-x-auto order-3 md:order-none w-full md:w-auto pb-2 md:pb-0">
+          <a className="navlink" href="#" aria-current={cur('home')}>{t('nav_home')}</a>
+          <a className="navlink" href="#dashboard" aria-current={cur('dashboard')}>{t('nav_dash')}</a>
+          <a className="navlink" href="#pricing" aria-current={cur('pricing')}>{t('nav_pricing')}</a>
+        </nav>
+        <button className="btn btn-line !py-1.5 !px-3.5 text-sm" onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}>{t('lang')}</button>
+      </div>
+    </header>
+  );
+}
+
+function Hero(){
+  const { t, L, db } = useApp();
+  const deck = useRef(null);
+  const areas = new Set(db.stores.map(s => s.area.ar)).size;
+  const picks = db.stores.slice(0, 3);
+  useEffect(() => {
+    if(REDUCED || !deck.current) return;
+    const cards = deck.current.querySelectorAll('.deck-card');
+    const pos = [{ r:-9, x:-58, y:-46 }, { r:4, x:-42, y:-52 }, { r:14, x:-26, y:-44 }];
+    const ctx = gsap.context(() => {
+      cards.forEach((c, i) => {
+        gsap.set(c, { clearProps:'transform' });
+        gsap.fromTo(c, { opacity:0, yPercent:-20, xPercent:pos[i].x, rotate:0, scale:.9 }, { opacity:1, yPercent:pos[i].y, xPercent:pos[i].x, rotate:pos[i].r, scale:1, duration:1.2, delay:.3 + i*.12, ease:'expo.out' });
+        gsap.to(c, { y:'+=10', duration:2.6 + i*.4, yoyo:true, repeat:-1, ease:'sine.inOut', delay:1.5 });
+      });
+    }, deck);
+    return () => ctx.revert();
+  }, [db.stores.length]);
+  return (
+    <section className="hero">
+      <DotGrid />
+      <div className="wrap grid lg:grid-cols-[1.25fr_1fr] gap-10 items-center" style={{ paddingBlock:'clamp(3rem,8vw,6rem)' }}>
+        <div className="min0">
+          <p className="eyebrow !text-[#9fd3d8] mb-5">{t('hero_eyebrow')}</p>
+          <SplitHeading text={t('hero_title')} className="font-extrabold mb-6" style={{ fontSize:'clamp(40px,6.4vw,84px)' }} />
+          <BlurText text={t('hero_sub')} className="text-lg opacity-85 max-w-xl mb-8" />
+          <div className="flex flex-wrap gap-3 mb-10">
+            <Magnet><button className="btn btn-coral" onClick={() => scrollToEl('#showrooms')}>{t('hero_cta')} <Arrow /></button></Magnet>
+            <Magnet><a className="btn btn-glass" href="#dashboard">{t('hero_owner')}</a></Magnet>
+          </div>
+          <div className="flex flex-wrap gap-x-10 gap-y-3">
+            {[[db.stores.length,'st_stores'],[db.products.length,'st_items'],[areas,'st_areas']].map(([n,k]) => (
+              <div key={k}><div className="disp font-extrabold text-4xl"><CountUp to={n} /></div><div className="text-sm opacity-70">{t(k)}</div></div>
+            ))}
+          </div>
+        </div>
+        <div className="deck hidden sm:block" ref={deck}>
+          {picks.map((s, i) => {
+            const items = db.products.filter(p => p.store === s.id);
+            return (
+              <a key={s.id} href={'#store-' + s.id} className="deck-card" style={{ background:s.color, color:onBrand(s.color), zIndex:i, transform:`translate(${-58 + i*16}%, -48%) rotate(${-9 + i*11}deg)` }}>
+                <div className="p-5 pb-3">
+                  <div className="text-xs opacity-75 mb-1">{L(s.area)}</div>
+                  <div className="disp font-extrabold text-2xl leading-tight">{L(s.name)}</div>
+                </div>
+                <div className="flex-1 grid grid-cols-2 gap-2 p-3 pt-0">
+                  {items.slice(0, 2).map(p => <div key={p.id} className="rounded-xl overflow-hidden"><Art p={p} brand={s.color} /></div>)}
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const Arrow = ({ size = 18 }) => {
+  const { lang } = useApp();
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ transform: lang === 'ar' ? 'scaleX(-1)' : 'none' }}><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
+};
+
+function StoreCard({ s }){
+  const { t, L, db } = useApp();
+  const items = db.products.filter(p => p.store === s.id);
+  const cats = [...new Set(items.map(p => p.cat))];
+  return (
+    <a href={'#store-' + s.id} className="block rv">
+      <SpotlightCard brand={s.color} className="h-full flex flex-col">
+        <div className="relative grid grid-cols-3 gap-2 p-3" style={{ background:s.color }}>
+          {items.slice(0, 3).map(p => <div key={p.id} className="rounded-xl overflow-hidden aspect-[4/5]"><ProductVisual p={p} brand={s.color} /></div>)}
+          {items.length === 0 && <div className="col-span-3 aspect-[3/1]" />}
+        </div>
+        <div className="p-5 flex flex-col gap-3 flex-1">
+          <div className="flex items-start gap-3">
+            <div className="min0 flex-1">
+              <h3 className="text-2xl font-extrabold">{L(s.name)}</h3>
+              <p className="text-sm text-muted mt-1">{L(s.tag)}</p>
+            </div>
+            <span className="w-3 h-3 rounded-full shrink-0 mt-2" style={{ background:s.color }} />
+          </div>
+          <div className="flex flex-wrap gap-1.5">{cats.map(c => <span key={c} className="tag bg-soft text-muted">{t('cat_' + c)}</span>)}</div>
+          <div className="mt-auto pt-3 border-t border-line flex items-center justify-between text-sm">
+            <span className="text-muted">{L(s.area)} · <span className="num font-semibold text-ink">{items.length}</span> {t('items')}</span>
+            <span className="font-semibold flex items-center gap-1.5">{t('enter')} <Arrow size={16} /></span>
+          </div>
+        </div>
+      </SpotlightCard>
+    </a>
+  );
+}
+
+function Home(){
+  const { t, L, db } = useApp();
+  const [q, setQ] = useState('');
+  const list = db.stores.filter(s => !q.trim() || (s.name.ar + ' ' + s.name.en + ' ' + s.area.ar + ' ' + s.area.en).toLowerCase().includes(q.trim().toLowerCase()));
+  useReveal('home');
+  return (
+    <>
+      <Hero />
+      <VelocityMarquee stores={db.stores} />
+      <section id="showrooms" className="wrap" style={{ paddingBlock:'clamp(3rem,7vw,5.5rem)' }}>
+        <div className="flex flex-wrap items-end gap-6 mb-8 rv">
+          <div className="min0 me-auto">
+            <p className="eyebrow mb-2">{t('dir_eyebrow')}</p>
+            <h2 className="font-extrabold" style={{ fontSize:'clamp(30px,4.4vw,52px)' }}>{t('dir_title')}</h2>
+          </div>
+          <div className="relative w-full sm:w-80">
+            <svg className="absolute top-1/2 -translate-y-1/2 start-3.5 text-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M20 20l-3.5-3.5" /></svg>
+            <input id="dir-q" className="field !ps-11 !rounded-full" placeholder={t('dir_search')} value={q} onChange={e => setQ(e.target.value)} />
+          </div>
+        </div>
+        {list.length
+          ? <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">{list.map(s => <StoreCard key={s.id} s={s} />)}</div>
+          : <div className="card p-10 text-center text-muted">{t('dir_none')}</div>}
+      </section>
+      <Owners />
+      <SurveyBand />
+    </>
+  );
+}
+
+function Owners(){
+  const { t } = useApp();
+  return (
+    <section className="wrap" style={{ paddingBlock:'0 clamp(3rem,7vw,5rem)' }}>
+      <div className="card overflow-hidden grid lg:grid-cols-[1fr_1.1fr] rv">
+        <div className="p-7 sm:p-10 flex flex-col gap-5">
+          <p className="eyebrow">{t('own_eyebrow')}</p>
+          <h2 className="font-extrabold" style={{ fontSize:'clamp(28px,3.6vw,44px)' }}>{t('own_title')}</h2>
+          <p className="text-muted text-lg">{t('own_sub')}</p>
+          <div className="flex flex-wrap items-center gap-4 mt-2">
+            <Magnet><a href="#dashboard" className="btn btn-ink">{t('own_cta')} <Arrow /></a></Magnet>
+            <a href="#pricing" className="font-semibold text-sea">{t('own_price')}</a>
+          </div>
+        </div>
+        <ol className="bg-soft p-7 sm:p-10 grid gap-6 content-center">
+          {t('steps').map(([h, d], i) => (
+            <li key={i} className="flex gap-5 items-start">
+              <span className="disp font-extrabold text-3xl text-coral num w-10 shrink-0">{i + 1}</span>
+              <div><div className="disp font-semibold text-xl mb-1">{h}</div><div className="text-muted">{d}</div></div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
+function SurveyBand(){
+  const { t, toast } = useApp();
+  return (
+    <section className="wrap" style={{ paddingBlock:'0 3rem' }}>
+      <div className="rounded-[28px] p-8 sm:p-12 flex flex-col md:flex-row md:items-center gap-6 rv" style={{ background:'var(--deep)', color:'#F2F7F6' }}>
+        <div className="min0 flex-1">
+          <h2 className="font-extrabold mb-2" style={{ fontSize:'clamp(24px,3vw,36px)' }}>{t('survey_title')}</h2>
+          <p className="opacity-75">{t('survey_sub')}</p>
+        </div>
+        <Magnet><a className="btn btn-coral" href={SURVEY_URL || '#'} target="_blank" rel="noopener" onClick={e => { if(!SURVEY_URL){ e.preventDefault(); toast(t('survey_missing')); } }}>{t('survey_btn')} <Arrow /></a></Magnet>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ المعرض ------------------------------ */
+function Switcher({ activeId }){
+  const { t, L, db } = useApp(); const list = useRef(null);
+  useEffect(() => {
+    const box = list.current, el = box && box.querySelector('[aria-current="true"]'); if(!el) return;
+    const target = el.offsetLeft - box.clientWidth/2 + el.clientWidth/2;
+    box.scrollTo({ left:target, behavior: REDUCED ? 'auto' : 'smooth' });
+  }, [activeId]);
+  return (
+    <div className="switcher">
+      <div className="wrap flex items-center gap-3">
+        <a href="#" className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-muted shrink-0 hover:text-ink">{t('sw_label')}</a>
+        <span className="hidden sm:block w-px h-5 bg-line shrink-0" />
+        <div ref={list} className="sw-list min0 flex-1">
+          {db.stores.map(s => (
+            <a key={s.id} href={'#store-' + s.id} className="sw" aria-current={s.id === activeId ? 'true' : undefined}>
+              <span className="w-2.5 h-2.5 rounded-full" style={{ background:s.color }} />{L(s.name)}
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Showroom({ id }){
+  const { t, L, db, lang, openProduct, toast } = useApp();
+  const s = db.stores.find(x => x.id === id);
+  const [cat, setCat] = useState('all'), [size, setSize] = useState(''), [sort, setSort] = useState('new'), [q, setQ] = useState('');
+  useEffect(() => { setCat('all'); setSize(''); setSort('new'); setQ(''); }, [id]);
+  useReveal(id);
+  if(!s) return <div className="wrap py-20 text-center"><a className="btn btn-ink" href="#">{t('back_dir')}</a></div>;
+  const all = db.products.filter(p => p.store === id);
+  const cats = [...new Set(all.map(p => p.cat))];
+  const sizes = [...new Set(all.filter(p => cat === 'all' || p.cat === cat).flatMap(p => p.sizes.map(z => z.s)))];
+  let items = all.filter(p => (cat === 'all' || p.cat === cat) && (!size || p.sizes.some(z => z.s === size && z.q > 0)) && (!q.trim() || (p.name.ar + ' ' + p.name.en).toLowerCase().includes(q.trim().toLowerCase())));
+  items.sort({ new:(a,b) => b.t - a.t, low:(a,b) => a.price - b.price, high:(a,b) => b.price - a.price }[sort]);
+  const idx = db.stores.findIndex(x => x.id === id), next = db.stores[(idx + 1) % db.stores.length];
+  const fg = onBrand(s.color);
+  const copy = async () => { try { await navigator.clipboard.writeText(s.phone); toast(t('copied')); } catch(e){ const r = document.createRange(); r.selectNodeContents(document.getElementById('store-phone')); getSelection().removeAllRanges(); getSelection().addRange(r); } };
+  const wa = 'https://wa.me/962' + String(s.phone).replace(/\D/g, '').replace(/^0/, '');
+  return (
+    <>
+      <Switcher activeId={id} />
+      <section className="cover" style={{ '--brand':s.color, '--on-brand':fg }}>
+        <div className="wrap relative" style={{ paddingBlock:'clamp(2.5rem,7vw,5rem)' }}>
+          <p className="text-sm font-semibold opacity-75 mb-3">{L(s.area)} · {t('city')}</p>
+          <SplitHeading text={L(s.name)} className="cover-name mb-4" />
+          <BlurText text={L(s.tag)} className="text-lg sm:text-xl opacity-85 max-w-2xl mb-8" delay={.25} />
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+            <div><div className="text-xs opacity-70">{t('hours')}</div><div className="font-semibold">{L(s.hours)}</div></div>
+            <div><div className="text-xs opacity-70">{t('items')}</div><div className="font-semibold num">{all.length}</div></div>
+            <div><div className="text-xs opacity-70">{t('whatsapp')}</div><div className="font-semibold flex items-center gap-2"><span id="store-phone" className="num">{s.phone}</span><button className="underline text-sm opacity-80" onClick={copy}>{t('copy')}</button></div></div>
+            <a href={wa} target="_blank" rel="noopener" className="btn ms-auto" style={{ background:fg, color:s.color }}><WaIcon /> {t('whatsapp')}</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="wrap" style={{ paddingBlock:'2rem 1rem' }}>
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+          <div className="flex gap-2 overflow-x-auto pb-1 min0">
+            <button className="chip" aria-pressed={cat === 'all'} onClick={() => { setCat('all'); setSize(''); }}>{t('all')} <span className="num opacity-60">{all.length}</span></button>
+            {cats.map(c => <button key={c} className="chip" aria-pressed={cat === c} onClick={() => { setCat(c); setSize(''); }}>{t('cat_' + c)}</button>)}
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-[1fr_auto_auto] gap-2 lg:ms-auto lg:w-[34rem]">
+            <input id="store-q" className="field col-span-2 sm:col-span-1" placeholder={t('search_store')} value={q} onChange={e => setQ(e.target.value)} />
+            <select id="store-size" className="field" value={size} onChange={e => setSize(e.target.value)} aria-label={t('size')}><option value="">{t('size')}: {t('all')}</option>{sizes.map(z => <option key={z} value={z}>{z}</option>)}</select>
+            <select id="store-sort" className="field" value={sort} onChange={e => setSort(e.target.value)} aria-label={t('sort')}>{['new','low','high'].map(k => <option key={k} value={k}>{t('s_' + k)}</option>)}</select>
+          </div>
+        </div>
+        <p className="text-sm text-muted mt-4"><span className="num">{items.length}</span> {t('results')}</p>
+      </section>
+
+      <section className="wrap" style={{ paddingBlock:'0 3rem' }}>
+        {items.length ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8">
+            {items.map((p, i) => <ProductCard key={p.id + cat + size + sort} p={p} brand={s.color} i={i} onOpen={() => openProduct(p.id)} />)}
+          </div>
+        ) : <div className="card p-12 text-center text-muted">{t('no_items')}</div>}
+      </section>
+
+      {next && next.id !== id && (
+        <section className="wrap" style={{ paddingBlock:'0 3.5rem' }}>
+          <a href={'#store-' + next.id} className="next rv" style={{ '--brand':next.color, '--on-brand':onBrand(next.color), '--dir': lang === 'ar' ? -1 : 1 }}>
+            <div className="p-8 sm:p-12 flex items-end gap-6">
+              <div className="min0 flex-1">
+                <div className="text-sm font-semibold opacity-75 mb-2">{t('next_label')} · {L(next.area)}</div>
+                <div className="disp next-name">{L(next.name)}</div>
+              </div>
+              <span className="grid place-items-center w-14 h-14 rounded-full shrink-0" style={{ background:onBrand(next.color), color:next.color }}><Arrow size={22} /></span>
+            </div>
+          </a>
+        </section>
+      )}
+    </>
+  );
+}
+
+const WaIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15.1L2 22l5-1.3A10 10 0 1012 2zm5.3 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-3.9-4.7-4.1-.1-.2-1.1-1.5-1.1-2.8s.7-2 .9-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.1 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.7-.2 1.3z" /></svg>;
+
+function ProductCard({ p, brand, i, onOpen }){
+  const { t, L } = useApp();
+  const off = p.old && p.old > p.price ? Math.round((1 - p.price/p.old) * 100) : 0;
+  const soldOut = !p.sizes.some(z => z.q > 0);
+  return (
+    <button className="pc" style={{ animationDelay: (Math.min(i, 12) * 45) + 'ms' }} onClick={onOpen}>
+      <div className="pc-img">
+        <ProductVisual p={p} brand={brand} />
+        <div className="absolute top-3 start-3 flex gap-1.5">
+          {off > 0 && <span className="tag bg-coral text-white">{t('sale')} <span className="num">{off}%</span></span>}
+          {soldOut && <span className="tag bg-ink text-bg">{t('sold_out')}</span>}
+        </div>
+        <span className="pc-quick">{t('view')}</span>
+      </div>
+      <div className="px-0.5">
+        <div className="text-xs text-muted mb-0.5">{t('cat_' + p.cat)}</div>
+        <div className="font-semibold leading-snug clamp1">{L(p.name)}</div>
+        <div className="flex items-baseline gap-2 mt-1">
+          <span className="font-bold"><span className="num">{money(p.price)}</span> {t('jd')}</span>
+          {off > 0 && <span className="text-sm text-muted line-through num">{money(p.old)}</span>}
+        </div>
+        <div className="flex flex-wrap gap-1 mt-2">
+          {p.sizes.slice(0, 5).map(z => <span key={z.s} className={'size !min-w-0 !px-1.5 !py-0 !text-[11.5px] ' + (z.q > 0 ? '' : 'out')}>{z.s}</span>)}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+/* ------------------------------ نافذة القطعة ------------------------------ */
+function Sheet({ id, onClose }){
+  const { t, L, db, lang, update, toast } = useApp();
+  const p = db.products.find(x => x.id === id), s = p && db.stores.find(x => x.id === p.store);
+  const [size, setSize] = useState(() => p?.sizes.find(z => z.q > 0)?.s || null);
+  const [reserve, setReserve] = useState(false);
+  const [name, setName] = useState(''), [phone, setPhone] = useState('');
+  const panel = useRef(null), scrim = useRef(null), closing = useRef(false);
+  const mobile = matchMedia('(max-width: 767px)').matches;
+  useLayoutEffect(() => {
+    window.__lenis?.stop();
+    if(!REDUCED){
+      gsap.fromTo(scrim.current, { opacity:0 }, { opacity:1, duration:.3 });
+      gsap.fromTo(panel.current, mobile ? { yPercent:100 } : { xPercent: lang === 'ar' ? -100 : 100 }, { yPercent:0, xPercent:0, duration:.55, ease:'expo.out' });
+    }
+    const key = e => { if(e.key === 'Escape') close(); };
+    addEventListener('keydown', key);
+    panel.current?.focus();
+    return () => { removeEventListener('keydown', key); window.__lenis?.start(); };
+  }, []);
+  const close = () => {
+    if(closing.current) return; closing.current = true;
+    if(REDUCED) return onClose();
+    gsap.to(scrim.current, { opacity:0, duration:.25 });
+    gsap.to(panel.current, { ...(mobile ? { yPercent:100 } : { xPercent: lang === 'ar' ? -100 : 100 }), duration:.35, ease:'power3.in', onComplete:onClose });
+  };
+  if(!p || !s) return null;
+  const off = p.old && p.old > p.price ? Math.round((1 - p.price/p.old) * 100) : 0;
+  const waText = t('wa_msg').replace('{p}', L(p.name)).replace('{price}', money(p.price)).replace('{s}', size || '-');
+  const wa = 'https://wa.me/962' + String(s.phone).replace(/\D/g, '').replace(/^0/, '') + '?text=' + encodeURIComponent(waText);
+  const send = e => {
+    e.preventDefault();
+    if(!size) return toast(t('m_need_size'));
+    if(!name.trim() || !phone.trim()) return toast(t('m_need_info'));
+    update(d => { d.orders.push({ id:uid('o'), store:s.id, product:p.id, size, name:name.trim(), phone:phone.trim(), status:'new', t:Date.now() }); });
+    setReserve(false); setName(''); setPhone(''); toast(t('m_done'));
+  };
+  return (
+    <>
+      <div ref={scrim} className="scrim" onClick={close} />
+      <aside ref={panel} className="sheet" role="dialog" aria-modal="true" aria-label={L(p.name)} tabIndex={-1} data-lenis-prevent>
+        <div className="relative aspect-[4/4] sm:aspect-[5/4]"><ProductVisual p={p} brand={s.color} />
+          <button className="absolute top-4 end-4 w-10 h-10 grid place-items-center rounded-full bg-surface border border-line" onClick={close} aria-label={t('close')}>
+            <svg width="16" height="16" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.4"><path d="M6 6l12 12M18 6L6 18" /></svg>
+          </button>
+          <a href={'#store-' + s.id} onClick={close} className="absolute bottom-4 start-4 flex items-center gap-2 rounded-full px-3.5 py-1.5 text-sm font-semibold" style={{ background:s.color, color:onBrand(s.color) }}>{L(s.name)}</a>
+        </div>
+        <div className="p-6 sm:p-8 flex flex-col gap-6">
+          <div>
+            <div className="text-sm text-muted mb-1">{t('cat_' + p.cat)} · <span className="num">{p.views}</span> {t('m_views')}</div>
+            <h2 className="text-3xl font-extrabold mb-3">{L(p.name)}</h2>
+            <div className="flex items-baseline gap-3">
+              <span className="text-2xl font-bold"><span className="num">{money(p.price)}</span> {t('jd')}</span>
+              {off > 0 && <><span className="text-muted line-through num">{money(p.old)}</span><span className="tag bg-coral text-white">{t('sale')} <span className="num">{off}%</span></span></>}
+            </div>
+          </div>
+          <div>
+            <div className="lbl">{t('m_sizes')}</div>
+            <div className="flex flex-wrap gap-2">{p.sizes.map(z => <button key={z.s} disabled={z.q <= 0} className={'size !py-1.5 ' + (z.q > 0 ? '' : 'out ') + (size === z.s ? 'sel' : '')} onClick={() => setSize(z.s)}>{z.s}</button>)}</div>
+          </div>
+          {L(p.desc) && <div><div className="lbl">{t('m_desc')}</div><p>{L(p.desc)}</p></div>}
+          <div className="grid gap-2.5">
+            <a className="btn btn-ink" href={wa} target="_blank" rel="noopener"><WaIcon /> {t('m_ask')}</a>
+            <p className="text-sm text-muted text-center"><span className="num">{s.phone}</span> · {L(s.area)} · {L(s.hours)}</p>
+            <button className="btn btn-line" onClick={() => size ? setReserve(r => !r) : toast(t('m_need_size'))}>{t('m_reserve')}</button>
+          </div>
+          {reserve && (
+            <form className="grid sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-soft" onSubmit={send} noValidate>
+              <div><label className="lbl" htmlFor="r-name">{t('m_name')}</label><input id="r-name" className="field" value={name} onChange={e => setName(e.target.value)} autoComplete="name" /></div>
+              <div><label className="lbl" htmlFor="r-phone">{t('m_phone')}</label><input id="r-phone" className="field num w-full" dir="ltr" inputMode="tel" placeholder="07XXXXXXXX" value={phone} onChange={e => setPhone(e.target.value)} /></div>
+              <button className="btn btn-coral sm:col-span-2" type="submit">{t('m_send')} · <span className="num">{size}</span></button>
+            </form>
+          )}
+        </div>
+      </aside>
+    </>
+  );
+}
+
+/* ------------------------------ لوحة المحل ------------------------------ */
+function compressImage(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => { const img = new Image(); img.onload = () => {
+      const max = 560, k = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width*k); c.height = Math.round(img.height*k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', .8));
+    }; img.onerror = rej; img.src = r.result; };
+    r.onerror = rej; r.readAsDataURL(file);
+  });
+}
+function relTime(ts, lang){
+  const m = Math.round((Date.now() - ts)/60000), f = new Intl.RelativeTimeFormat(lang, { numeric:'auto' });
+  if(m < 60) return f.format(-m, 'minute'); if(m < 1440) return f.format(-Math.round(m/60), 'hour'); return f.format(-Math.round(m/1440), 'day');
+}
+
+function Dashboard(){
+  const { t, L, db, update, toast, lang } = useApp();
+  const [tab, setTab] = useState('items');
+  const [editId, setEditId] = useState(null);
+  const [delArm, setDelArm] = useState(null);
+  const [resetArm, setResetArm] = useState(false);
+  let sid = db.session.store; const s = db.stores.find(x => x.id === sid) || db.stores[0]; sid = s?.id;
+  useReveal('dash');
+  if(!s) return null;
+  const items = db.products.filter(p => p.store === sid).sort((a,b) => b.t - a.t);
+  const orders = db.orders.filter(o => o.store === sid).sort((a,b) => b.t - a.t);
+  const views = items.reduce((a,p) => a + (p.views || 0), 0), newRes = orders.filter(o => o.status === 'new').length;
+  const outSizes = items.reduce((a,p) => a + p.sizes.filter(z => z.q <= 0).length, 0);
+  const pick = v => { update(d => { d.session.store = v; }); setEditId(null); setTab('items'); };
+  const newStore = () => {
+    const id = uid('s');
+    update(d => { d.stores.push({ id, color:'#3D5A80', name:{ar:T.ar.new_store,en:T.en.new_store}, tag:{ar:'',en:''}, area:{ar:'العقبة',en:'Aqaba'}, hours:{ar:'',en:''}, phone:'07' }); d.session.store = id; });
+    setTab('profile'); toast(t('new_ok'));
+  };
+  const tabBtn = (k, label, n) => (
+    <button key={k} className={'px-4 py-3 text-sm font-semibold border-b-2 whitespace-nowrap ' + (tab === k ? 'border-ink text-ink' : 'border-transparent text-muted hover:text-ink')} onClick={() => { setTab(k); if(k !== 'add') setEditId(null); }}>
+      {label}{n !== undefined && <span className={'tag ms-2 num ' + (k === 'res' && newRes ? 'bg-coral text-white' : 'bg-soft text-muted')}>{n}</span>}
+    </button>
+  );
+  const fg = onBrand(s.color);
+  return (
+    <>
+      <section style={{ background:s.color, color:fg }}>
+        <div className="wrap flex flex-wrap items-end gap-6" style={{ paddingBlock:'2.5rem 2rem' }}>
+          <div className="min0 me-auto">
+            <p className="text-sm font-semibold opacity-75 mb-2">{t('d_title')}</p>
+            <SplitHeading text={L(s.name)} className="font-extrabold" style={{ fontSize:'clamp(34px,5vw,60px)' }} />
+            <p className="opacity-80 mt-2 max-w-xl">{t('d_sub')}</p>
+          </div>
+          <div className="flex flex-wrap items-end gap-2">
+            <div><label className="lbl !opacity-80" style={{ color:fg }} htmlFor="d-store">{t('d_manage')}</label>
+              <select id="d-store" className="field min-w-[12rem]" value={sid} onChange={e => pick(e.target.value)}>{db.stores.map(x => <option key={x.id} value={x.id}>{L(x.name)}</option>)}</select></div>
+            <a className="btn" style={{ background:fg, color:s.color }} href={'#store-' + sid}>{t('d_open')} <Arrow size={16} /></a>
+            <button className="btn btn-glass" style={{ color:fg, borderColor:fg === '#FFFFFF' ? 'rgba(255,255,255,.35)' : 'rgba(0,0,0,.25)' }} onClick={newStore}>+ {t('d_new')}</button>
+          </div>
+        </div>
+      </section>
+      <section className="wrap" style={{ paddingBlock:'2rem 3rem' }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          {[[t('k_items'), items.length, ''], [t('k_views'), views, ''], [t('k_res'), newRes, newRes ? 'text-coral' : ''], [t('k_out'), outSizes, outSizes ? 'text-warn' : '']].map(([l, n, c]) => (
+            <div key={l} className="card p-5"><div className="text-sm text-muted">{l}</div><div className={'disp font-extrabold text-4xl mt-1 ' + c}><CountUp to={n} /></div></div>
+          ))}
+        </div>
+        <div className="card overflow-hidden">
+          <div className="flex overflow-x-auto border-b border-line px-2">
+            {tabBtn('items', t('t_items'), items.length)}{tabBtn('res', t('t_res'), orders.length)}{tabBtn('add', editId ? t('t_edit') : t('t_add'))}{tabBtn('profile', t('t_profile'))}
+          </div>
+          <div className="p-4 sm:p-6">
+            {tab === 'items' && (items.length ? (
+              <div className="tbl-wrap"><table className="tbl">
+                <thead><tr><th>{t('c_item')}</th><th>{t('c_price')}</th><th>{t('c_sizes')}</th><th>{t('c_views')}</th><th></th></tr></thead>
+                <tbody>{items.map(p => (
+                  <tr key={p.id}>
+                    <td><div className="flex items-center gap-3 min-w-[14rem]"><div className="w-12 h-14 shrink-0 rounded-lg overflow-hidden"><ProductVisual p={p} brand={s.color} /></div><div className="min0"><div className="font-semibold clamp1">{L(p.name)}</div><div className="text-xs text-muted">{t('cat_' + p.cat)}</div></div></div></td>
+                    <td className="whitespace-nowrap"><div className="font-semibold"><span className="num">{money(p.price)}</span> {t('jd')}</div>{p.old > p.price && <div className="text-xs text-muted line-through num">{money(p.old)}</div>}</td>
+                    <td><div className="flex flex-wrap gap-1 min-w-[12rem]">{p.sizes.map((z, i) => <button key={z.s} className={'size ' + (z.q > 0 ? '' : 'out')} onClick={() => update(d => { const zz = d.products.find(x => x.id === p.id).sizes[i]; zz.q = zz.q > 0 ? 0 : 1; })}>{z.s}</button>)}</div></td>
+                    <td className="num">{p.views || 0}</td>
+                    <td><div className="flex gap-2 justify-end">
+                      <button className="btn btn-line !py-1.5 !px-3.5 text-sm" onClick={() => { setEditId(p.id); setTab('add'); }}>{t('edit')}</button>
+                      <button className={'btn !py-1.5 !px-3.5 text-sm ' + (delArm === p.id ? 'btn-coral' : 'btn-line')} onClick={() => {
+                        if(delArm === p.id){ update(d => { d.products = d.products.filter(x => x.id !== p.id); }); setDelArm(null); toast(t('deleted')); }
+                        else { setDelArm(p.id); setTimeout(() => setDelArm(a => a === p.id ? null : a), 4000); }
+                      }}>{delArm === p.id ? t('del_ok') : t('del')}</button>
+                    </div></td>
+                  </tr>))}
+                </tbody></table></div>
+            ) : <p className="text-center text-muted py-10">{t('no_dash_items')}</p>)}
+
+            {tab === 'res' && (orders.length ? (
+              <div className="tbl-wrap"><table className="tbl">
+                <thead><tr><th>{t('r_item')}</th><th>{t('r_size')}</th><th>{t('r_cust')}</th><th>{t('r_when')}</th><th>{t('r_status')}</th></tr></thead>
+                <tbody>{orders.map(o => { const p = db.products.find(x => x.id === o.product); const tone = { new:'bg-coral text-white', confirmed:'bg-soft text-sea', collected:'bg-soft text-ok', cancelled:'bg-soft text-muted' }[o.status]; return (
+                  <tr key={o.id}>
+                    <td><div className="flex items-center gap-3 min-w-[12rem]">{p && <div className="w-10 h-12 rounded-md overflow-hidden shrink-0"><ProductVisual p={p} brand={s.color} /></div>}<span className="font-semibold clamp1">{p ? L(p.name) : '—'}</span></div></td>
+                    <td><span className="size">{o.size}</span></td>
+                    <td className="whitespace-nowrap"><div className="font-semibold">{o.name}</div><div className="text-xs text-muted num">{o.phone}</div></td>
+                    <td className="text-sm text-muted whitespace-nowrap">{relTime(o.t, lang)}</td>
+                    <td><div className="flex items-center gap-2"><span className={'tag ' + tone}>{t('st_' + o.status)}</span>
+                      <select className="field !py-1 !w-auto text-sm" value={o.status} aria-label={t('r_status')} onChange={e => update(d => { d.orders.find(x => x.id === o.id).status = e.target.value; })}>{['new','confirmed','collected','cancelled'].map(k => <option key={k} value={k}>{t('st_' + k)}</option>)}</select></div></td>
+                  </tr>); })}
+                </tbody></table></div>
+            ) : <p className="text-center text-muted py-10">{t('no_res')}</p>)}
+
+            {tab === 'add' && <ItemForm key={editId || 'new-' + sid} sid={sid} brand={s.color} editId={editId} done={() => { setEditId(null); setTab('items'); }} />}
+            {tab === 'profile' && <ProfileForm key={sid} s={s} />}
+          </div>
+        </div>
+        <div className="flex justify-end mt-4">
+          <button className="text-sm text-muted hover:text-coral" onClick={() => {
+            if(resetArm){ update(() => seed(), true); setResetArm(false); setTab('items'); setEditId(null); toast(t('reset_done')); }
+            else { setResetArm(true); setTimeout(() => setResetArm(false), 4000); }
+          }}>{resetArm ? t('reset_ok') : t('reset')}</button>
+        </div>
+      </section>
+    </>
+  );
+}
+
+function ItemForm({ sid, brand, editId, done }){
+  const { t, L, db, update, toast } = useApp();
+  const ex = editId && db.products.find(p => p.id === editId);
+  const [f, setF] = useState(() => ex
+    ? { name_ar:ex.name.ar, name_en:ex.name.en, desc:ex.desc ? (ex.desc.ar || '') : '', cat:ex.cat, price:ex.price, old:ex.old || '', sizes:ex.sizes.filter(z => z.q > 0).map(z => z.s), color:ex.color, img:ex.img || null, shape:ex.shape }
+    : { name_ar:'', name_en:'', desc:'', cat:'men', price:'', old:'', sizes:[], color:'#3D5A80', img:null });
+  const set = (k, v) => setF(o => ({ ...o, [k]:v }));
+  const submit = e => {
+    e.preventDefault();
+    const pr = parseFloat(f.price), old = parseFloat(f.old);
+    if(!(f.name_ar.trim() || f.name_en.trim()) || !(pr > 0) || !f.sizes.length) return toast(t('a_err'));
+    const data = { cat:f.cat, shape: ex && ex.cat === f.cat ? ex.shape : DEFAULT_SHAPE[f.cat], name:{ ar:f.name_ar.trim() || f.name_en.trim(), en:f.name_en.trim() || f.name_ar.trim() }, desc:{ ar:f.desc.trim(), en:f.desc.trim() }, price:pr, old: old > pr ? old : null, color:f.color, img:f.img };
+    update(d => {
+      if(ex){ const p = d.products.find(x => x.id === ex.id); const prev = Object.fromEntries(p.sizes.map(z => [z.s, z.q])); Object.assign(p, data, { sizes:SIZESETS[f.cat].map(s => ({ s, q: f.sizes.includes(s) ? Math.max(1, prev[s] || 0) : 0 })) }); }
+      else d.products.push({ id:uid('p'), store:sid, views:0, t:Date.now(), ...data, sizes:SIZESETS[f.cat].map(s => ({ s, q: f.sizes.includes(s) ? 1 : 0 })) });
+    });
+    toast(t('a_saved')); done();
+  };
+  const preview = { cat:f.cat, color:f.color, img:f.img, shape: ex && ex.cat === f.cat ? ex.shape : DEFAULT_SHAPE[f.cat] };
+  return (
+    <form className="grid lg:grid-cols-[1fr_240px] gap-8" onSubmit={submit} noValidate>
+      <div className="grid sm:grid-cols-2 gap-4 min0">
+        <div><label className="lbl" htmlFor="a-ar">{t('a_name_ar')}</label><input id="a-ar" className="field" dir="rtl" value={f.name_ar} onChange={e => set('name_ar', e.target.value)} /></div>
+        <div><label className="lbl" htmlFor="a-en">{t('a_name_en')}</label><input id="a-en" className="field" dir="ltr" value={f.name_en} onChange={e => set('name_en', e.target.value)} /></div>
+        <div className="sm:col-span-2"><label className="lbl" htmlFor="a-desc">{t('a_desc')}</label><input id="a-desc" className="field" value={f.desc} onChange={e => set('desc', e.target.value)} /></div>
+        <div><label className="lbl" htmlFor="a-cat">{t('a_cat')}</label><select id="a-cat" className="field" value={f.cat} onChange={e => setF(o => ({ ...o, cat:e.target.value, sizes:[] }))}>{CATS.map(c => <option key={c} value={c}>{t('cat_' + c)}</option>)}</select></div>
+        <div><label className="lbl" htmlFor="a-color">{t('a_color')}</label><input id="a-color" type="color" className="field !p-1 h-[46px]" value={f.color} onChange={e => set('color', e.target.value)} /></div>
+        <div><label className="lbl" htmlFor="a-price">{t('a_price')}</label><input id="a-price" type="number" min="0" step="0.5" className="field num w-full" value={f.price} onChange={e => set('price', e.target.value)} placeholder="0.000" /></div>
+        <div><label className="lbl" htmlFor="a-old">{t('a_old')}</label><input id="a-old" type="number" min="0" step="0.5" className="field num w-full" value={f.old} onChange={e => set('old', e.target.value)} placeholder="—" /></div>
+        <div className="sm:col-span-2"><span className="lbl">{t('a_sizes')}</span><div className="flex flex-wrap gap-2">{SIZESETS[f.cat].map(z => <button type="button" key={z} className={'size !py-1.5 ' + (f.sizes.includes(z) ? 'sel' : '')} onClick={() => set('sizes', f.sizes.includes(z) ? f.sizes.filter(x => x !== z) : [...f.sizes, z])}>{z}</button>)}</div></div>
+        <div className="sm:col-span-2"><label className="lbl" htmlFor="a-img">{t('a_img')}</label>
+          <input id="a-img" type="file" accept="image/*" className="field" onChange={async e => { const file = e.target.files[0]; if(!file) return; try { set('img', await compressImage(file)); } catch(err){ toast(t('storage_full')); } }} />
+          <p className="text-xs text-muted mt-1">{t('a_img_hint')}</p></div>
+        <div className="sm:col-span-2 flex flex-wrap gap-2"><button className="btn btn-ink" type="submit">{ex ? t('a_update') : t('a_save')}</button>{ex && <button type="button" className="btn btn-line" onClick={done}>{t('cancel')}</button>}</div>
+      </div>
+      <div className="min0">
+        <div className="pc-img"><ProductVisual p={preview} brand={brand} /></div>
+        <div className="mt-3 font-semibold clamp1">{(L({ ar:f.name_ar, en:f.name_en })) || '—'}</div>
+        {f.price && <div className="text-sm"><span className="num">{money(f.price || 0)}</span> {t('jd')}</div>}
+        {f.img && <button type="button" className="text-sm text-coral mt-1" onClick={() => set('img', null)}>{t('a_rm_img')}</button>}
+      </div>
+    </form>
+  );
+}
+
+function ProfileForm({ s }){
+  const { t, update, toast, lang } = useApp();
+  const [f, setF] = useState({ nar:s.name.ar, nen:s.name.en, tar:s.tag.ar, ten:s.tag.en, aar:s.area.ar, aen:s.area.en, phone:s.phone, hours:s.hours[lang] || s.hours.ar, color:s.color });
+  const set = (k, v) => setF(o => ({ ...o, [k]:v }));
+  const submit = e => { e.preventDefault(); update(d => { const x = d.stores.find(y => y.id === s.id);
+    x.name = { ar:f.nar || f.nen, en:f.nen || f.nar }; x.tag = { ar:f.tar || f.ten, en:f.ten || f.tar }; x.area = { ar:f.aar || f.aen, en:f.aen || f.aar }; x.phone = f.phone; x.hours = { ar:f.hours, en:f.hours }; x.color = f.color; }); toast(t('p_saved')); };
+  const In = (k, label, dir) => <div><label className="lbl" htmlFor={'p-' + k}>{label}</label><input id={'p-' + k} className="field" dir={dir} value={f[k]} onChange={e => set(k, e.target.value)} /></div>;
+  return (
+    <form className="grid sm:grid-cols-2 gap-4 max-w-3xl" onSubmit={submit} noValidate>
+      {In('nar', t('p_name_ar'), 'rtl')}{In('nen', t('p_name_en'), 'ltr')}
+      {In('tar', t('p_tag_ar'), 'rtl')}{In('ten', t('p_tag_en'), 'ltr')}
+      {In('aar', t('p_area_ar'), 'rtl')}{In('aen', t('p_area_en'), 'ltr')}
+      {In('phone', t('p_phone'), 'ltr')}{In('hours', t('p_hours'))}
+      <div><label className="lbl" htmlFor="p-color">{t('p_color')}</label><input id="p-color" type="color" className="field !p-1 h-[46px]" value={f.color} onChange={e => set('color', e.target.value)} /></div>
+      <div className="sm:col-span-2"><button className="btn btn-ink" type="submit">{t('p_save')}</button></div>
+    </form>
+  );
+}
+
+/* ------------------------------ الاشتراك ------------------------------ */
+function Pricing(){
+  const { t } = useApp();
+  useReveal('pricing');
+  return (
+    <>
+      <section className="hero">
+        <DotGrid />
+        <div className="wrap" style={{ paddingBlock:'clamp(3rem,7vw,5rem)' }}>
+          <p className="eyebrow !text-[#9fd3d8] mb-4">{t('pr_eyebrow')}</p>
+          <SplitHeading text={t('pr_title')} className="font-extrabold mb-5 max-w-4xl" style={{ fontSize:'clamp(34px,5.5vw,70px)' }} />
+          <BlurText text={t('pr_sub')} className="text-lg opacity-85 max-w-2xl" />
+        </div>
+      </section>
+      <section className="wrap" style={{ paddingBlock:'3rem' }}>
+        <div className="grid lg:grid-cols-[1fr_1.15fr] gap-6 items-start">
+          <SpotlightCard brand="var(--coral)" className="p-7 sm:p-9 rv" style={{ borderWidth:2, borderColor:'var(--ink)' }}>
+            <p className="eyebrow mb-3">{t('pr_plan')}</p>
+            <div className="flex items-baseline gap-2 mb-1"><span className="disp font-extrabold num" style={{ fontSize:'clamp(64px,8vw,96px)', lineHeight:1 }}><CountUp to={50} /></span><span className="text-2xl font-semibold">{t('jd')}</span><span className="text-muted">/ {t('pr_month')}</span></div>
+            <p className="text-sm text-muted mb-7">{t('pr_note')}</p>
+            <ul className="grid gap-3 mb-8">{t('pr_f').map(x => <li key={x} className="flex gap-3"><svg className="shrink-0 mt-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg><span>{x}</span></li>)}</ul>
+            <Magnet><a href="#dashboard" className="btn btn-coral">{t('own_cta')} <Arrow /></a></Magnet>
+          </SpotlightCard>
+          <div className="card p-6 sm:p-8 min0 rv">
+            <h2 className="text-2xl font-extrabold mb-5">{t('pr_vs')}</h2>
+            <div className="tbl-wrap"><table className="tbl">
+              <thead><tr><th></th><th>{t('pr_own')}</th><th>{t('pr_raff')}</th></tr></thead>
+              <tbody>{t('pr_rows').map(r => <tr key={r[0]}><td className="font-semibold">{r[0]}</td><td className="text-muted">{r[1]}</td><td className="font-semibold text-sea">{r[2]}</td></tr>)}</tbody>
+            </table></div>
+          </div>
+        </div>
+      </section>
+      <SurveyBand />
+    </>
+  );
+}
+
+/* ------------------------------ التطبيق ------------------------------ */
+function App(){
+  const [lang, setLangState] = useState(() => lsGet(LANG_KEY) || 'ar');
+  const [db, setDb] = useState(loadDb);
+  const [route, setRoute] = useState(parseHash);
+  const [sheet, setSheet] = useState(null);
+  const [msg, setMsg] = useState(null);
+  const tm = useRef();
+
+  const toast = m => { setMsg(m); clearTimeout(tm.current); tm.current = setTimeout(() => setMsg(null), 3200); };
+  const update = (fn, replace) => setDb(d => { if(replace) return fn(); const n = structuredClone(d); fn(n); return n; });
+  const setLang = l => { setLangState(l); lsSet(LANG_KEY, l); };
+  const t = k => T[lang][k] ?? k;
+  const L = o => o ? (o[lang] || o.ar || o.en || '') : '';
+  const openProduct = id => { update(d => { const p = d.products.find(x => x.id === id); if(p) p.views = (p.views || 0) + 1; }); setSheet(id); };
+
+  useEffect(() => { if(!lsSet(DB_KEY, db)) toast(T[lang].storage_full); }, [db]);
+  useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; ScrollTrigger.refresh(); }, [lang]);
+  useEffect(() => { const on = () => { setRoute(parseHash()); setSheet(null); }; addEventListener('hashchange', on); return () => removeEventListener('hashchange', on); }, []);
+  useLayoutEffect(() => { scrollToTop(); }, [route.name, route.id]);
+
+  useEffect(() => {
+    if(REDUCED) return;
+    const lenis = new Lenis({ lerp:.1, smoothWheel:true });
+    window.__lenis = lenis;
+    lenis.on('scroll', ScrollTrigger.update);
+    const raf = time => lenis.raf(time * 1000);
+    gsap.ticker.add(raf); gsap.ticker.lagSmoothing(0);
+    return () => { gsap.ticker.remove(raf); lenis.destroy(); window.__lenis = null; };
+  }, []);
+
+  const ctx = { lang, setLang, t, L, db, update, toast, openProduct };
+  const key = route.name + (route.id || '') + lang;
+  return (
+    <Ctx.Provider value={ctx}>
+      <Nav route={route} />
+      <main key={key}>
+        {route.name === 'home' && <Home />}
+        {route.name === 'store' && <Showroom id={route.id} />}
+        {route.name === 'dashboard' && <Dashboard />}
+        {route.name === 'pricing' && <Pricing />}
+      </main>
+      <footer className="border-t border-line"><div className="wrap text-sm text-muted flex flex-wrap gap-2 justify-between" style={{ paddingBlock:'1.6rem' }}><span className="disp font-semibold text-ink">{t('brand')} {t('city')}</span><span>{t('footer')}</span></div></footer>
+      {sheet && <Sheet id={sheet} onClose={() => setSheet(null)} />}
+      {msg && <div className="toast" role="status"><div>{msg}</div></div>}
+    </Ctx.Provider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
