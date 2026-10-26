@@ -1,4 +1,4 @@
-<title>رف العقبة</title>
+<title>OnShirt</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,18 +21,29 @@ tailwind.config = { theme: { extend: {
 /* Layout: a mall of separate showrooms. Deep-sea hero with an interactive dot field, a velocity marquee of shop names,
    a showroom directory; each showroom is themed in its own shop color with a sticky name switcher to move between shops. */
 :root{
-  --bg:#EDF1F0; --surface:#FFFFFF; --ink:#0C1A1E; --muted:#56666B; --line:#D3DBD9;
-  --sea:#0B5A64; --deep:#06262C; --coral:#EE5A45; --soft:#E2EAE9; --ok:#1E7A4F; --warn:#A8640A;
+  /* Palette: midnight navy -> royal blue -> mist -> champagne beige */
+  --bg:#F4EFE7; --surface:#FFFFFF; --ink:#0F1E36; --muted:#5D6574; --line:#E3D9C9;
+  --sea:#1E3A6B; --deep:#0C1C38; --coral:#A9824F; --soft:#ECE4D6; --beige:#E3D3B8; --ok:#2C7A54; --warn:#A8640A;
+  --grad:linear-gradient(180deg,#0C1C38 0%,#1B3666 38%,#4D6694 64%,#A9AEBB 84%,#E3D3B8 100%);
+  --grad-x:linear-gradient(120deg,#0C1C38 0%,#1E3A6B 45%,#8C93A6 78%,#E3D3B8 100%);
+  --gold:linear-gradient(135deg,#EBDDC3 0%,#C9A774 55%,#A9824F 100%);
+  --shadow:rgba(15,30,54,.28);
   --f-display:Alexandria,"IBM Plex Sans Arabic",Tahoma,sans-serif;
   --f-body:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
   --nav-h:64px;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#061215; --surface:#0D1D21; --ink:#E6EEED; --muted:#8FA2A5; --line:#1C3338;
-  --sea:#43B4BF; --deep:#041a1e; --coral:#FF6E5A; --soft:#11272B; --ok:#4CC38A; --warn:#E7A23B; color-scheme:dark } }
+  --bg:#0A1220; --surface:#111C2F; --ink:#F0E9DD; --muted:#9BA4B4; --line:#23324D;
+  --sea:#93B2E2; --deep:#070F1E; --coral:#D8B887; --soft:#17243A; --beige:#D6C3A1; --ok:#5BC596; --warn:#E7A23B;
+  --grad:linear-gradient(180deg,#070F1E 0%,#132A52 40%,#2E4A7A 68%,#6F7891 86%,#B9A786 100%);
+  --grad-x:linear-gradient(120deg,#070F1E 0%,#16305C 45%,#5B6A88 78%,#B9A786 100%);
+  --shadow:rgba(0,0,0,.55); color-scheme:dark } }
 :root[data-theme="dark"]{
-  --bg:#061215; --surface:#0D1D21; --ink:#E6EEED; --muted:#8FA2A5; --line:#1C3338;
-  --sea:#43B4BF; --deep:#041a1e; --coral:#FF6E5A; --soft:#11272B; --ok:#4CC38A; --warn:#E7A23B; color-scheme:dark }
+  --bg:#0A1220; --surface:#111C2F; --ink:#F0E9DD; --muted:#9BA4B4; --line:#23324D;
+  --sea:#93B2E2; --deep:#070F1E; --coral:#D8B887; --soft:#17243A; --beige:#D6C3A1; --ok:#5BC596; --warn:#E7A23B;
+  --grad:linear-gradient(180deg,#070F1E 0%,#132A52 40%,#2E4A7A 68%,#6F7891 86%,#B9A786 100%);
+  --grad-x:linear-gradient(120deg,#070F1E 0%,#16305C 45%,#5B6A88 78%,#B9A786 100%);
+  --shadow:rgba(0,0,0,.55); color-scheme:dark }
 
 /* lenis */
 html.lenis,html.lenis body{height:auto}.lenis:not(.lenis-autoToggle).lenis-stopped{overflow:clip}.lenis.lenis-smooth [data-lenis-prevent]{overscroll-behavior:contain}.lenis.lenis-smooth iframe{pointer-events:none}
@@ -44,9 +55,22 @@ h1,h2,h3,.disp{ font-family:var(--f-display); text-wrap:balance; line-height:1.1
 .num{ font-variant-numeric:tabular-nums; direction:ltr; unicode-bidi:isolate; display:inline-block }
 .eyebrow{ font-size:12px; letter-spacing:.08em; font-weight:600; text-transform:uppercase; color:var(--muted) }
 
-.btn{ display:inline-flex; align-items:center; justify-content:center; gap:.55rem; border-radius:999px; padding:.75rem 1.3rem; font-weight:600; white-space:nowrap; cursor:pointer; transition:background .2s, color .2s, border-color .2s, box-shadow .2s }
-.btn-ink{ background:var(--ink); color:var(--bg) }
-.btn-coral{ background:var(--coral); color:#fff; box-shadow:0 10px 30px -10px color-mix(in srgb,var(--coral) 70%,transparent) }
+@property --sx{ syntax:'<length>'; inherits:false; initial-value:0px }
+@property --sy{ syntax:'<length>'; inherits:false; initial-value:14px }
+@property --sb{ syntax:'<length>'; inherits:false; initial-value:34px }
+@property --sa{ syntax:'<number>'; inherits:false; initial-value:.55 }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:.55rem; border-radius:999px; padding:.75rem 1.35rem; font-weight:600; white-space:nowrap; cursor:pointer;
+  transition:background .3s, color .3s, border-color .3s, box-shadow .45s cubic-bezier(.2,.8,.2,1), transform .45s cubic-bezier(.2,.8,.2,1) }
+.btn:hover{ transform:translateY(-2px) }
+.btn:active{ transform:translateY(0) scale(.98) }
+.btn-ink{ background:linear-gradient(135deg,#1E3A6B,#0C1C38); color:#F4EFE7; box-shadow:0 10px 26px -12px var(--shadow) }
+.btn-ink:hover{ box-shadow:0 18px 38px -14px var(--shadow) }
+.btn-coral{ background:var(--gold); color:#0C1C38; box-shadow:0 12px 30px -12px rgba(169,130,79,.75), inset 0 1px 0 rgba(255,255,255,.55) }
+.btn-coral:hover{ box-shadow:0 20px 44px -14px rgba(169,130,79,.9), inset 0 1px 0 rgba(255,255,255,.55) }
+/* interactive shadow: offset follows the pointer like a light source (see Tilt) */
+.lift{ --sx:0px; --sy:14px; --sb:34px; --sa:.55; box-shadow:var(--sx) var(--sy) var(--sb) -14px color-mix(in srgb,var(--shadow) calc(var(--sa)*100%),transparent);
+  transition:--sx .5s cubic-bezier(.2,.8,.2,1), --sy .5s cubic-bezier(.2,.8,.2,1), --sb .5s cubic-bezier(.2,.8,.2,1), --sa .5s; transform-style:preserve-3d; will-change:transform }
+.lift.on{ --sb:60px; --sa:.9 }
 .btn-line{ border:1px solid var(--line); background:var(--surface); color:var(--ink) }
 .btn-line:hover{ border-color:var(--ink) }
 .btn-glass{ border:1px solid rgba(255,255,255,.28); color:#fff; background:rgba(255,255,255,.06); backdrop-filter:blur(6px) }
@@ -69,12 +93,22 @@ h1,h2,h3,.disp{ font-family:var(--f-display); text-wrap:balance; line-height:1.1
 .navlink[aria-current="page"]{ color:var(--ink); background:var(--soft) }
 
 /* hero */
-.hero{ position:relative; background:var(--deep); color:#F2F7F6; overflow:hidden; isolation:isolate }
+.hero{ position:relative; background:var(--grad); color:#F4EFE7; overflow:hidden; isolation:isolate }
 .dotfield{ position:absolute; inset:0; overflow:hidden; z-index:-1; pointer-events:none; contain:strict }
 .dotfield canvas{ position:absolute; top:0; left:0; display:block }
-.hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(70% 60% at 85% 10%, rgba(238,90,69,.22), transparent 60%), radial-gradient(60% 70% at 10% 100%, rgba(67,180,191,.25), transparent 60%); pointer-events:none }
-.deck{ position:relative; height:360px }
-.deck-card{ position:absolute; width:62%; max-width:300px; aspect-ratio:3/4; border-radius:22px; overflow:hidden; box-shadow:0 30px 60px -20px rgba(0,0,0,.55); display:flex; flex-direction:column; cursor:pointer; left:50%; top:50% }
+.hero::after{ content:""; position:absolute; inset:0; z-index:-1; background:radial-gradient(55% 40% at 80% 6%, rgba(227,211,184,.22), transparent 65%), radial-gradient(50% 45% at 12% 30%, rgba(93,128,190,.35), transparent 65%); pointer-events:none }
+.bento{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:150px; gap:12px; grid-auto-flow:dense }
+@media (min-width:640px){ .bento{ grid-template-columns:repeat(4,minmax(0,1fr)); grid-auto-rows:170px; gap:14px } }
+@media (min-width:1024px){ .bento{ grid-template-columns:repeat(6,minmax(0,1fr)); grid-auto-rows:190px; gap:16px } }
+.tile{ position:relative; border-radius:20px; overflow:hidden; cursor:pointer; background:var(--surface); text-align:start; min-width:0 }
+.tile.tall{ grid-row:span 2 } .tile.wide{ grid-column:span 2 }
+@media (max-width:639px){ .tile.m-hide{ display:none } }
+.tile > .art, .tile > img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .9s cubic-bezier(.2,.8,.2,1) }
+.tile:hover > .art, .tile:hover > img{ transform:scale(1.06) }
+.tile-cap{ position:absolute; inset-inline:10px; bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:.5rem; padding:.5rem .7rem; border-radius:12px;
+  background:color-mix(in srgb,#0C1C38 62%,transparent); color:#F4EFE7; backdrop-filter:blur(10px); font-size:12.5px; transform:translateY(6px); opacity:.0; transition:all .45s cubic-bezier(.2,.8,.2,1) }
+.tile:hover .tile-cap, .tile:focus-visible .tile-cap{ opacity:1; transform:none }
+@media (hover:none){ .tile-cap{ opacity:1; transform:none } }
 
 /* marquee */
 .marquee{ overflow:hidden; border-block:1px solid var(--line); background:var(--surface); direction:ltr }
@@ -82,17 +116,18 @@ h1,h2,h3,.disp{ font-family:var(--f-display); text-wrap:balance; line-height:1.1
 .marquee-item{ font-family:var(--f-display); font-weight:800; font-size:clamp(28px,5vw,56px); padding-inline:1.6rem; white-space:nowrap; display:flex; align-items:center; gap:1.6rem; cursor:pointer; line-height:1.6 }
 .marquee-item .o{ color:transparent; -webkit-text-stroke:1.2px var(--ink) }
 .marquee-item:hover .o{ color:var(--ink) }
+.marquee{ background:linear-gradient(90deg,var(--surface),var(--soft),var(--surface)) }
 .marquee-dot{ width:.32em; height:.32em; border-radius:50%; display:inline-block }
 
 /* spotlight card (React Bits pattern) */
-.spot{ position:relative; overflow:hidden; border-radius:22px; border:1px solid var(--line); background:var(--surface); transition:border-color .3s, transform .4s cubic-bezier(.2,.8,.2,1) }
+.spot{ position:relative; overflow:hidden; border-radius:22px; border:1px solid var(--line); background:var(--surface); transition:border-color .3s }
 .spot::before{ content:""; position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .35s; background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%), color-mix(in srgb,var(--brand,var(--sea)) 22%,transparent), transparent 60%); z-index:2 }
 .spot:hover::before{ opacity:1 }
-.spot:hover{ border-color:color-mix(in srgb,var(--brand,var(--sea)) 55%,var(--line)); transform:translateY(-4px) }
+.spot:hover{ border-color:color-mix(in srgb,var(--brand,var(--sea)) 55%,var(--line)) }
 
 /* product card */
 .pc{ display:flex; flex-direction:column; gap:.7rem; cursor:pointer; text-align:start; animation:rise .7s cubic-bezier(.2,.8,.2,1) both }
-.pc-img{ position:relative; aspect-ratio:4/5; max-width:100%; border-radius:18px; overflow:hidden; background:var(--soft) }
+.pc-img{ position:relative; aspect-ratio:4/5; max-width:100%; border-radius:18px; overflow:hidden; background:var(--soft); isolation:isolate }
 .pc-img > *{ transition:transform .7s cubic-bezier(.2,.8,.2,1) }
 .pc:hover .pc-img > .art, .pc:hover .pc-img > img{ transform:scale(1.05) }
 .pc-img img{ width:100%; height:100%; object-fit:cover }
@@ -124,7 +159,8 @@ h1,h2,h3,.disp{ font-family:var(--f-display); text-wrap:balance; line-height:1.1
 .toast{ position:fixed; inset-inline:0; bottom:calc(22px + env(safe-area-inset-bottom,0px)); z-index:90; display:flex; justify-content:center; padding-inline:16px; pointer-events:none }
 .toast div{ background:var(--ink); color:var(--bg); padding:.75rem 1.2rem; border-radius:14px; font-weight:500; box-shadow:0 16px 40px -12px rgba(0,0,0,.45); max-width:540px; animation:rise .35s both }
 
-.card{ background:var(--surface); border:1px solid var(--line); border-radius:20px }
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:20px; box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 18px 40px -30px var(--shadow) }
+::selection{ background:#C9A774; color:#0C1C38 }
 .tbl-wrap{ overflow-x:auto }
 .tbl{ width:100%; border-collapse:collapse; font-size:14px }
 .tbl th{ text-align:start; font-size:12px; color:var(--muted); font-weight:600; padding:.7rem; border-bottom:1px solid var(--line); white-space:nowrap }
@@ -139,7 +175,7 @@ h1,h2,h3,.disp{ font-family:var(--f-display); text-wrap:balance; line-height:1.1
 
 <script type="text/babel" data-presets="react">
 /* ==========================================================================
-   رف العقبة — نسخة تجريبية (MVP)
+   OnShirt — نسخة تجريبية (MVP)
    React + Tailwind + GSAP (SplitText, ScrollTrigger) + Lenis
    مكوّنات الحركة مبنية على أنماط React Bits: SplitText, BlurText, Magnet,
    SpotlightCard, DotGrid, ScrollVelocity, CountUp.
@@ -152,14 +188,14 @@ const { useState, useEffect, useLayoutEffect, useRef, useMemo, createContext, us
 gsap.registerPlugin(ScrollTrigger, SplitText);
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FINE = matchMedia('(pointer: fine)').matches;
-const DB_KEY = 'raff_v2', LANG_KEY = 'raff_lang';
+const DB_KEY = 'onshirt_v1', LANG_KEY = 'raff_lang';
 const lsGet = k => { try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } };
 const lsSet = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch(e){ return false; } };
 
 /* ---------------------------- النصوص ---------------------------- */
 const T = {
 ar:{
-  brand:'رف', city:'العقبة', demo:'نسخة تجريبية',
+  brand:'OnShirt', city:'العقبة', demo:'نسخة تجريبية',
   nav_home:'المعارض', nav_dash:'لأصحاب المحلات', nav_pricing:'الاشتراك', lang:'English',
   hero_eyebrow:'العقبة · نسخة تجريبية',
   hero_title:'كل محل في العقبة، بمعرضه الخاص',
@@ -185,7 +221,7 @@ ar:{
   m_sizes:'المقاسات المتوفرة', m_desc:'عن القطعة', m_ask:'اسأل المحل على واتساب', m_reserve:'احجز القطعة واستلمها من المحل',
   m_name:'اسمك', m_phone:'رقم هاتفك', m_send:'أرسل الحجز', m_need_size:'اختر المقاس أولاً', m_need_info:'اكتب اسمك ورقم هاتفك',
   m_done:'وصل الحجز للمحل. افتح لوحة المحل لتشاهده.', m_views:'مشاهدة', close:'إغلاق',
-  wa_msg:'مرحبا، شفت "{p}" في معرضكم على منصة رف بسعر {price} د.أ. هل المقاس {s} متوفر؟',
+  wa_msg:'مرحبا، شفت "{p}" في معرضكم على منصة OnShirt بسعر {price} د.أ. هل المقاس {s} متوفر؟',
   d_title:'لوحة المحل', d_sub:'هيك بتدير معرضك. كل التعديلات محفوظة على هذا الجهاز فقط.', d_manage:'المحل', d_new:'سجّل محل جديد', d_open:'افتح المعرض',
   k_items:'القطع المعروضة', k_views:'مشاهدات', k_res:'حجوزات جديدة', k_out:'مقاسات نفدت',
   t_items:'القطع', t_res:'الحجوزات', t_add:'إضافة قطعة', t_edit:'تعديل القطعة', t_profile:'بيانات المعرض',
@@ -202,12 +238,12 @@ ar:{
   pr_eyebrow:'الاشتراك', pr_title:'اشتراك واحد بدل موقع إلكتروني كامل', pr_sub:'موقع خاص لمحل ألبسة يكلّف تصميماً واستضافة وصيانة ومتابعة. هنا معرضك جاهز، والزبائن يتنقّلون بين محلات العقبة من مكان واحد.',
   pr_plan:'اشتراك المحل', pr_month:'شهرياً', pr_note:'سعر مقترح للمرحلة الأولى، ونسأل أصحاب المحلات عن رأيهم فيه.',
   pr_f:['معرض خاص باسم محلك ولونه','عدد غير محدود من القطع والصور','تعديل الأسعار والمقاسات من الهاتف','زر واتساب على كل قطعة','استقبال حجوزات القطع','إحصائيات المشاهدات والحجوزات','ظهور في دليل محلات العقبة'],
-  pr_vs:'مقارنة سريعة', pr_own:'موقع خاص للمحل', pr_raff:'معرض على رف',
+  pr_vs:'مقارنة سريعة', pr_own:'موقع خاص للمحل', pr_raff:'معرض على OnShirt',
   pr_rows:[['تكلفة البداية','تصميم وبرمجة','لا يوجد'],['الاستضافة والصيانة','عليك','علينا'],['جلب الزبائن','إعلانات ممولة','زوار دليل المحلات'],['وقت الإطلاق','أسابيع','نفس اليوم']],
   footer:'نسخة تجريبية لعرض الفكرة على محلات العقبة. المحلات والقطع والأرقام أمثلة وهمية.'
 },
 en:{
-  brand:'Raff', city:'Aqaba', demo:'Demo',
+  brand:'OnShirt', city:'Aqaba', demo:'Demo',
   nav_home:'Showrooms', nav_dash:'For shop owners', nav_pricing:'Subscription', lang:'العربية',
   hero_eyebrow:'Aqaba · Demo',
   hero_title:'Every Aqaba shop, in its own showroom',
@@ -233,7 +269,7 @@ en:{
   m_sizes:'Available sizes', m_desc:'About this item', m_ask:'Ask the shop on WhatsApp', m_reserve:'Reserve and pick up in store',
   m_name:'Your name', m_phone:'Your phone', m_send:'Send reservation', m_need_size:'Pick a size first', m_need_info:'Enter your name and phone',
   m_done:'Reservation sent. Open the shop dashboard to see it.', m_views:'views', close:'Close',
-  wa_msg:'Hi, I saw "{p}" in your showroom on Raff for {price} JD. Is size {s} available?',
+  wa_msg:'Hi, I saw "{p}" in your showroom on OnShirt for {price} JD. Is size {s} available?',
   d_title:'Shop dashboard', d_sub:'This is how you run your showroom. All changes are saved on this device only.', d_manage:'Shop', d_new:'Register a new shop', d_open:'Open showroom',
   k_items:'Listed items', k_views:'Views', k_res:'New reservations', k_out:'Sold-out sizes',
   t_items:'Items', t_res:'Reservations', t_add:'Add item', t_edit:'Edit item', t_profile:'Showroom details',
@@ -250,7 +286,7 @@ en:{
   pr_eyebrow:'Subscription', pr_title:'One subscription instead of a full website', pr_sub:'A dedicated website for a clothing shop costs design, hosting, maintenance and upkeep. Here your showroom is ready, and customers move between Aqaba shops from one place.',
   pr_plan:'Shop subscription', pr_month:'per month', pr_note:'Proposed launch price. We are asking shop owners what they think of it.',
   pr_f:['Your own showroom in your name and color','Unlimited items and photos','Update prices and sizes from your phone','WhatsApp button on every item','Item reservations','Views and reservation stats','Listing in the Aqaba shop directory'],
-  pr_vs:'Quick comparison', pr_own:'Own shop website', pr_raff:'Showroom on Raff',
+  pr_vs:'Quick comparison', pr_own:'Own shop website', pr_raff:'Showroom on OnShirt',
   pr_rows:[['Setup cost','Design and development','None'],['Hosting and upkeep','Yours','Ours'],['Bringing customers','Paid ads','Directory visitors'],['Time to launch','Weeks','Same day']],
   footer:'A demo to present the idea to Aqaba shops. Shops, items and numbers are fictional examples.'
 }};
@@ -266,14 +302,14 @@ function seed(){
   const P = (id, store, cat, shape, ar, en, price, old, color, q, days, dar, den, views) =>
     ({ id, store, cat, shape, name:{ar,en}, price, old, color, sizes:sz(cat,q), t:d(days), desc:{ar:dar,en:den}, views });
   return {
-    v:2, session:{ store:'s1' },
+    v:3, session:{ store:'s1' },
     stores:[
-      { id:'s1', color:'#1F3A5F', name:{ar:'بيت الأناقة',en:'Elegance House'}, tag:{ar:'كلاسيك رجالي ونسائي للمناسبات والدوام',en:'Classic menswear and womenswear for work and occasions'}, area:{ar:'وسط البلد',en:'Downtown'}, hours:{ar:'10 ص – 11 م',en:'10am – 11pm'}, phone:'0790000101' },
-      { id:'s2', color:'#0E7C86', name:{ar:'موج سبورت',en:'Mawj Sport'}, tag:{ar:'ملابس وأحذية رياضية للبحر والجيم',en:'Sportswear and shoes for the sea and the gym'}, area:{ar:'السوق التجاري',en:'Commercial Market'}, hours:{ar:'11 ص – 12 ل',en:'11am – 12am'}, phone:'0790000102' },
-      { id:'s3', color:'#5B3A55', name:{ar:'دار العباية',en:'Abaya House'}, tag:{ar:'عبايات كريب وكتان وتطريز يدوي',en:'Crepe, linen and hand-embroidered abayas'}, area:{ar:'شارع النهضة',en:'An-Nahda St.'}, hours:{ar:'10 ص – 10 م',en:'10am – 10pm'}, phone:'0790000103' },
-      { id:'s4', color:'#A9442A', name:{ar:'خطوة',en:'Khatwa'}, tag:{ar:'أحذية جلد وسنيكرز وصنادل صيفية',en:'Leather shoes, sneakers and summer sandals'}, area:{ar:'وسط البلد',en:'Downtown'}, hours:{ar:'10 ص – 11 م',en:'10am – 11pm'}, phone:'0790000104' },
-      { id:'s5', color:'#E0A526', name:{ar:'براعم',en:'Baraem'}, tag:{ar:'ملابس أطفال من عمر سنتين لعشر سنوات',en:'Kidswear from age two to ten'}, area:{ar:'الحمامات التونسية',en:'Tunisian Baths'}, hours:{ar:'4 م – 11 م',en:'4pm – 11pm'}, phone:'0790000105' },
-      { id:'s6', color:'#2F6B4F', name:{ar:'أوتلت المرسى',en:'Marsa Outlet'}, tag:{ar:'كاجوال يومي بأسعار مخفضة طول السنة',en:'Everyday casualwear, discounted all year'}, area:{ar:'السوق التجاري',en:'Commercial Market'}, hours:{ar:'10 ص – 12 ل',en:'10am – 12am'}, phone:'0790000106' }
+      { id:'s1', color:'#1B2F55', name:{ar:'بيت الأناقة',en:'Elegance House'}, tag:{ar:'كلاسيك رجالي ونسائي للمناسبات والدوام',en:'Classic menswear and womenswear for work and occasions'}, area:{ar:'وسط البلد',en:'Downtown'}, hours:{ar:'10 ص – 11 م',en:'10am – 11pm'}, phone:'0790000101' },
+      { id:'s2', color:'#2E5E8C', name:{ar:'موج سبورت',en:'Mawj Sport'}, tag:{ar:'ملابس وأحذية رياضية للبحر والجيم',en:'Sportswear and shoes for the sea and the gym'}, area:{ar:'السوق التجاري',en:'Commercial Market'}, hours:{ar:'11 ص – 12 ل',en:'11am – 12am'}, phone:'0790000102' },
+      { id:'s3', color:'#8C7556', name:{ar:'دار العباية',en:'Abaya House'}, tag:{ar:'عبايات كريب وكتان وتطريز يدوي',en:'Crepe, linen and hand-embroidered abayas'}, area:{ar:'شارع النهضة',en:'An-Nahda St.'}, hours:{ar:'10 ص – 10 م',en:'10am – 10pm'}, phone:'0790000103' },
+      { id:'s4', color:'#6B4F3A', name:{ar:'خطوة',en:'Khatwa'}, tag:{ar:'أحذية جلد وسنيكرز وصنادل صيفية',en:'Leather shoes, sneakers and summer sandals'}, area:{ar:'وسط البلد',en:'Downtown'}, hours:{ar:'10 ص – 11 م',en:'10am – 11pm'}, phone:'0790000104' },
+      { id:'s5', color:'#C9A86E', name:{ar:'براعم',en:'Baraem'}, tag:{ar:'ملابس أطفال من عمر سنتين لعشر سنوات',en:'Kidswear from age two to ten'}, area:{ar:'الحمامات التونسية',en:'Tunisian Baths'}, hours:{ar:'4 م – 11 م',en:'4pm – 11pm'}, phone:'0790000105' },
+      { id:'s6', color:'#4F6E8F', name:{ar:'أوتلت المرسى',en:'Marsa Outlet'}, tag:{ar:'كاجوال يومي بأسعار مخفضة طول السنة',en:'Everyday casualwear, discounted all year'}, area:{ar:'السوق التجاري',en:'Commercial Market'}, hours:{ar:'10 ص – 12 ل',en:'10am – 12am'}, phone:'0790000106' }
     ],
     products:[
       P('p1','s1','men','shirt','قميص أكسفورد أزرق فاتح','Light blue Oxford shirt',18,null,'#A8C4E2',[1,3,2,2,0],2,'قطن أكسفورد بقصة مستقيمة، يناسب الدوام.','Straight-cut cotton Oxford, made for the office.',34),
@@ -309,7 +345,7 @@ function seed(){
     ]
   };
 }
-function loadDb(){ const d = lsGet(DB_KEY); return d && d.v === 2 ? d : seed(); }
+function loadDb(){ const d = lsGet(DB_KEY); return d && d.v === 3 ? d : seed(); }
 
 /* ---------------------------- أدوات ---------------------------- */
 const money = n => Number(n).toFixed(3);
@@ -408,6 +444,23 @@ function Magnet({ children, strength = .28 }){
   return <span ref={ref} style={{ display:'inline-block' }}>{children}</span>;
 }
 
+/* Tilt — ميلان ثلاثي الأبعاد وظل يتحرك عكس المؤشر كأنه مصدر ضوء */
+function Tilt({ as:Tag = 'div', className = '', max = 6, children, ...rest }){
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current; if(!el || !FINE || REDUCED) return;
+    gsap.set(el, { transformPerspective:900 });
+    const rx = gsap.quickTo(el, 'rotationX', { duration:.6, ease:'power3' }), ry = gsap.quickTo(el, 'rotationY', { duration:.6, ease:'power3' });
+    const move = e => { const r = el.getBoundingClientRect(); const px = (e.clientX - r.left)/r.width - .5, py = (e.clientY - r.top)/r.height - .5;
+      ry(px * max * 2); rx(-py * max * 2); el.style.setProperty('--sx', (-px * 26) + 'px'); el.style.setProperty('--sy', (16 - py * 24) + 'px'); };
+    const enter = () => el.classList.add('on');
+    const leave = () => { rx(0); ry(0); el.classList.remove('on'); el.style.setProperty('--sx', '0px'); el.style.setProperty('--sy', '14px'); };
+    el.addEventListener('pointerenter', enter); el.addEventListener('pointermove', move); el.addEventListener('pointerleave', leave);
+    return () => { el.removeEventListener('pointerenter', enter); el.removeEventListener('pointermove', move); el.removeEventListener('pointerleave', leave); };
+  }, []);
+  return <Tag ref={ref} className={'lift ' + className} {...rest}>{children}</Tag>;
+}
+
 /* SpotlightCard */
 function SpotlightCard({ children, className = '', brand, style, ...rest }){
   const move = e => { const r = e.currentTarget.getBoundingClientRect(); e.currentTarget.style.setProperty('--mx', (e.clientX - r.left) + 'px'); e.currentTarget.style.setProperty('--my', (e.clientY - r.top) + 'px'); };
@@ -420,7 +473,7 @@ function DotGrid({ gap = 26, size = 2.2, radius = 150 }){
   useEffect(() => {
     const cv = ref.current, ctx = cv.getContext('2d');
     let w, h, dots = [], dpr = Math.min(2, devicePixelRatio || 1), mx = -999, my = -999, raf, visible = true;
-    const base = [180, 215, 214], hot = hexRgb('#EE5A45');
+    const base = [196, 208, 232], hot = hexRgb('#E8D9BF');
     const box = cv.parentElement;
     const build = () => { w = box.clientWidth; h = box.clientHeight; if(!w || !h) return; cv.style.width = w + 'px'; cv.style.height = h + 'px'; cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr); ctx.setTransform(dpr,0,0,dpr,0,0); dots = [];
       for(let y = gap/2; y < h; y += gap) for(let x = gap/2; x < w; x += gap) dots.push({ x, y, ox:0, oy:0 }); };
@@ -518,8 +571,9 @@ function Nav({ route }){
     <header className="nav" ref={hdr}>
       <div className="wrap flex items-center gap-3 flex-wrap" style={{ minHeight:64 }}>
         <a href="#" className="flex items-center gap-2.5 me-auto">
-          <span className="grid place-items-center w-9 h-9 rounded-xl bg-ink text-bg disp font-extrabold text-lg">{lang === 'ar' ? 'ر' : 'R'}</span>
-          <span className="disp font-extrabold text-xl">{t('brand')} <span className="text-coral">{t('city')}</span></span>
+          <span className="grid place-items-center w-9 h-9 rounded-xl disp font-extrabold text-lg lift" style={{ background:'var(--grad-x)', color:'#F4EFE7' }}>O</span>
+          <span className="disp font-extrabold text-xl" dir="ltr">On<span className="text-coral">Shirt</span></span>
+          <span className="tag bg-soft text-muted hidden sm:inline">{t('city')}</span>
         </a>
         <nav className="flex gap-1 overflow-x-auto order-3 md:order-none w-full md:w-auto pb-2 md:pb-0">
           <a className="navlink" href="#" aria-current={cur('home')}>{t('nav_home')}</a>
@@ -533,56 +587,52 @@ function Nav({ route }){
 }
 
 function Hero(){
-  const { t, L, db } = useApp();
-  const deck = useRef(null);
+  const { t, L, db, openProduct } = useApp();
+  const grid = useRef(null);
   const areas = new Set(db.stores.map(s => s.area.ar)).size;
-  const picks = db.stores.slice(0, 3);
+  const picks = useMemo(() => {
+    const per = db.stores.map(s => db.products.filter(p => p.store === s.id)); const out = [];
+    for(let r = 0; out.length < 8 && r < 10; r++) per.forEach(list => { if(list[r] && out.length < 8) out.push(list[r]); });
+    return out;
+  }, [db.products.length, db.stores.length]);
+  const shape = ['tall','','wide','','tall m-hide','m-hide','m-hide','wide m-hide'];
   useEffect(() => {
-    if(REDUCED || !deck.current) return;
-    const cards = deck.current.querySelectorAll('.deck-card');
-    const pos = [{ r:-9, x:-58, y:-46 }, { r:4, x:-42, y:-52 }, { r:14, x:-26, y:-44 }];
+    if(REDUCED || !grid.current) return;
     const ctx = gsap.context(() => {
-      cards.forEach((c, i) => {
-        gsap.set(c, { clearProps:'transform' });
-        gsap.fromTo(c, { opacity:0, yPercent:-20, xPercent:pos[i].x, rotate:0, scale:.9 }, { opacity:1, yPercent:pos[i].y, xPercent:pos[i].x, rotate:pos[i].r, scale:1, duration:1.2, delay:.3 + i*.12, ease:'expo.out' });
-        gsap.to(c, { y:'+=10', duration:2.6 + i*.4, yoyo:true, repeat:-1, ease:'sine.inOut', delay:1.5 });
-      });
-    }, deck);
+      const tiles = gsap.utils.toArray('.tile');
+      gsap.fromTo(tiles, { y:70, opacity:0, scale:.94 }, { y:0, opacity:1, scale:1, duration:1.2, ease:'expo.out', stagger:.07, delay:.35 });
+      tiles.forEach((el, i) => gsap.to(el, { yPercent: i % 2 ? -7 : -2, ease:'none', scrollTrigger:{ trigger:grid.current, start:'top bottom', end:'bottom top', scrub:.6 } }));
+    }, grid);
     return () => ctx.revert();
-  }, [db.stores.length]);
+  }, [picks.length]);
   return (
     <section className="hero">
       <DotGrid />
-      <div className="wrap grid lg:grid-cols-[1.25fr_1fr] gap-10 items-center" style={{ paddingBlock:'clamp(3rem,8vw,6rem)' }}>
-        <div className="min0">
-          <p className="eyebrow !text-[#9fd3d8] mb-5">{t('hero_eyebrow')}</p>
-          <SplitHeading text={t('hero_title')} className="font-extrabold mb-6" style={{ fontSize:'clamp(40px,6.4vw,84px)' }} />
-          <BlurText text={t('hero_sub')} className="text-lg opacity-85 max-w-xl mb-8" />
-          <div className="flex flex-wrap gap-3 mb-10">
-            <Magnet><button className="btn btn-coral" onClick={() => scrollToEl('#showrooms')}>{t('hero_cta')} <Arrow /></button></Magnet>
-            <Magnet><a className="btn btn-glass" href="#dashboard">{t('hero_owner')}</a></Magnet>
+      <div className="wrap" style={{ paddingBlock:'clamp(3rem,7vw,5.5rem) clamp(2.5rem,5vw,4.5rem)' }}>
+        <div className="grid lg:grid-cols-[1.45fr_1fr] gap-8 lg:gap-14 items-end mb-10 lg:mb-14">
+          <div className="min0">
+            <p className="eyebrow !text-[#E3D3B8] mb-5">{t('hero_eyebrow')}</p>
+            <SplitHeading text={t('hero_title')} className="font-extrabold mb-6" style={{ fontSize:'clamp(40px,6.2vw,82px)' }} />
+            <BlurText text={t('hero_sub')} className="text-lg opacity-85 max-w-xl" />
           </div>
-          <div className="flex flex-wrap gap-x-10 gap-y-3">
-            {[[db.stores.length,'st_stores'],[db.products.length,'st_items'],[areas,'st_areas']].map(([n,k]) => (
-              <div key={k}><div className="disp font-extrabold text-4xl"><CountUp to={n} /></div><div className="text-sm opacity-70">{t(k)}</div></div>
-            ))}
+          <div className="min0 flex flex-col gap-8">
+            <div className="flex flex-wrap gap-3">
+              <Magnet><button className="btn btn-coral" onClick={() => scrollToEl('#showrooms')}>{t('hero_cta')} <Arrow /></button></Magnet>
+              <Magnet><a className="btn btn-glass" href="#dashboard">{t('hero_owner')}</a></Magnet>
+            </div>
+            <div className="flex flex-wrap gap-x-10 gap-y-3">
+              {[[db.stores.length,'st_stores'],[db.products.length,'st_items'],[areas,'st_areas']].map(([n,k]) => (
+                <div key={k}><div className="disp font-extrabold text-4xl"><CountUp to={n} /></div><div className="text-sm opacity-70">{t(k)}</div></div>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="deck hidden sm:block" ref={deck}>
-          {picks.map((s, i) => {
-            const items = db.products.filter(p => p.store === s.id);
-            return (
-              <a key={s.id} href={'#store-' + s.id} className="deck-card" style={{ background:s.color, color:onBrand(s.color), zIndex:i, transform:`translate(${-58 + i*16}%, -48%) rotate(${-9 + i*11}deg)` }}>
-                <div className="p-5 pb-3">
-                  <div className="text-xs opacity-75 mb-1">{L(s.area)}</div>
-                  <div className="disp font-extrabold text-2xl leading-tight">{L(s.name)}</div>
-                </div>
-                <div className="flex-1 grid grid-cols-2 gap-2 p-3 pt-0">
-                  {items.slice(0, 2).map(p => <div key={p.id} className="rounded-xl overflow-hidden"><Art p={p} brand={s.color} /></div>)}
-                </div>
-              </a>
-            );
-          })}
+        <div className="bento" ref={grid}>
+          {picks.map((p, i) => { const st = db.stores.find(x => x.id === p.store); return (
+            <Tilt key={p.id} as="button" max={5} className={'tile ' + (shape[i] || '')} onClick={() => openProduct(p.id)} aria-label={L(p.name)}>
+              <ProductVisual p={p} brand={st.color} />
+              <span className="tile-cap"><b className="clamp1">{L(st.name)}</b><span className="shrink-0"><span className="num">{money(p.price)}</span> {t('jd')}</span></span>
+            </Tilt>); })}
         </div>
       </div>
     </section>
@@ -600,6 +650,7 @@ function StoreCard({ s }){
   const cats = [...new Set(items.map(p => p.cat))];
   return (
     <a href={'#store-' + s.id} className="block rv">
+      <Tilt className="h-full rounded-[22px]" max={4}>
       <SpotlightCard brand={s.color} className="h-full flex flex-col">
         <div className="relative grid grid-cols-3 gap-2 p-3" style={{ background:s.color }}>
           {items.slice(0, 3).map(p => <div key={p.id} className="rounded-xl overflow-hidden aspect-[4/5]"><ProductVisual p={p} brand={s.color} /></div>)}
@@ -620,6 +671,7 @@ function StoreCard({ s }){
           </div>
         </div>
       </SpotlightCard>
+      </Tilt>
     </a>
   );
 }
@@ -685,7 +737,7 @@ function SurveyBand(){
   const { t, toast } = useApp();
   return (
     <section className="wrap" style={{ paddingBlock:'0 3rem' }}>
-      <div className="rounded-[28px] p-8 sm:p-12 flex flex-col md:flex-row md:items-center gap-6 rv" style={{ background:'var(--deep)', color:'#F2F7F6' }}>
+      <div className="rounded-[28px] p-8 sm:p-12 flex flex-col md:flex-row md:items-center gap-6 rv" style={{ background:'var(--grad-x)', color:'#F4EFE7' }}>
         <div className="min0 flex-1">
           <h2 className="font-extrabold mb-2" style={{ fontSize:'clamp(24px,3vw,36px)' }}>{t('survey_title')}</h2>
           <p className="opacity-75">{t('survey_sub')}</p>
@@ -802,14 +854,14 @@ function ProductCard({ p, brand, i, onOpen }){
   const soldOut = !p.sizes.some(z => z.q > 0);
   return (
     <button className="pc" style={{ animationDelay: (Math.min(i, 12) * 45) + 'ms' }} onClick={onOpen}>
-      <div className="pc-img">
+      <Tilt className="pc-img" max={5}>
         <ProductVisual p={p} brand={brand} />
         <div className="absolute top-3 start-3 flex gap-1.5">
           {off > 0 && <span className="tag bg-coral text-white">{t('sale')} <span className="num">{off}%</span></span>}
           {soldOut && <span className="tag bg-ink text-bg">{t('sold_out')}</span>}
         </div>
         <span className="pc-quick">{t('view')}</span>
-      </div>
+      </Tilt>
       <div className="px-0.5">
         <div className="text-xs text-muted mb-0.5">{t('cat_' + p.cat)}</div>
         <div className="font-semibold leading-snug clamp1">{L(p.name)}</div>
@@ -1097,20 +1149,20 @@ function Pricing(){
       <section className="hero">
         <DotGrid />
         <div className="wrap" style={{ paddingBlock:'clamp(3rem,7vw,5rem)' }}>
-          <p className="eyebrow !text-[#9fd3d8] mb-4">{t('pr_eyebrow')}</p>
+          <p className="eyebrow !text-[#E3D3B8] mb-4">{t('pr_eyebrow')}</p>
           <SplitHeading text={t('pr_title')} className="font-extrabold mb-5 max-w-4xl" style={{ fontSize:'clamp(34px,5.5vw,70px)' }} />
           <BlurText text={t('pr_sub')} className="text-lg opacity-85 max-w-2xl" />
         </div>
       </section>
       <section className="wrap" style={{ paddingBlock:'3rem' }}>
         <div className="grid lg:grid-cols-[1fr_1.15fr] gap-6 items-start">
-          <SpotlightCard brand="var(--coral)" className="p-7 sm:p-9 rv" style={{ borderWidth:2, borderColor:'var(--ink)' }}>
+          <Tilt className="rv rounded-[22px]" max={3}><SpotlightCard brand="var(--coral)" className="p-7 sm:p-9" style={{ borderWidth:2, borderColor:'var(--coral)' }}>
             <p className="eyebrow mb-3">{t('pr_plan')}</p>
             <div className="flex items-baseline gap-2 mb-1"><span className="disp font-extrabold num" style={{ fontSize:'clamp(64px,8vw,96px)', lineHeight:1 }}><CountUp to={50} /></span><span className="text-2xl font-semibold">{t('jd')}</span><span className="text-muted">/ {t('pr_month')}</span></div>
             <p className="text-sm text-muted mb-7">{t('pr_note')}</p>
             <ul className="grid gap-3 mb-8">{t('pr_f').map(x => <li key={x} className="flex gap-3"><svg className="shrink-0 mt-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ok)" strokeWidth="3"><path d="M5 12l5 5 9-10" /></svg><span>{x}</span></li>)}</ul>
             <Magnet><a href="#dashboard" className="btn btn-coral">{t('own_cta')} <Arrow /></a></Magnet>
-          </SpotlightCard>
+          </SpotlightCard></Tilt>
           <div className="card p-6 sm:p-8 min0 rv">
             <h2 className="text-2xl font-extrabold mb-5">{t('pr_vs')}</h2>
             <div className="tbl-wrap"><table className="tbl">
@@ -1145,6 +1197,11 @@ function App(){
   useEffect(() => { document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'; ScrollTrigger.refresh(); }, [lang]);
   useEffect(() => { const on = () => { setRoute(parseHash()); setSheet(null); }; addEventListener('hashchange', on); return () => removeEventListener('hashchange', on); }, []);
   useLayoutEffect(() => { scrollToTop(); }, [route.name, route.id]);
+  useLayoutEffect(() => {
+    if(REDUCED) return;
+    const tw = gsap.fromTo('main', { opacity:0, y:18 }, { opacity:1, y:0, duration:.75, ease:'power3.out', clearProps:'transform,opacity' });
+    return () => tw.kill();
+  }, [route.name, route.id, lang]);
 
   useEffect(() => {
     if(REDUCED) return;
